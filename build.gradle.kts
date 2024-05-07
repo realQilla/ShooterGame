@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "net.qilla"
-version = "1.20.5-0.DEV"
+version = "1.20.6-0.DEV"
 
 java {
     toolchain.languageVersion.set(JavaLanguageVersion.of(21))
@@ -22,7 +22,7 @@ repositories {
 
 
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.5-R0.1-SNAPSHOT")
+    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.16.0")
 }
 

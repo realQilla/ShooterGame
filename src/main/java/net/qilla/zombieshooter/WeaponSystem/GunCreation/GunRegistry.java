@@ -1,11 +1,8 @@
 package net.qilla.zombieshooter.WeaponSystem.GunCreation;
 
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.AssaultRifle.AssaultRifleT1;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.AssaultRifle.AssaultRifleT2;
+import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.AssaultRifle;
 import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.GunBase;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.StandardPistol.StandardPistolT1;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.StandardPistol.StandardPistolT2;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.StandardPistol.StandardPistolT3;
+import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.StandardPistol;
 import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.UniqueID;
 
 import java.util.HashMap;
@@ -31,10 +28,10 @@ public class GunRegistry {
     }
 
     public static void registerAll() {
-        register(new StandardPistolT1().getUniqueID(), new StandardPistolT1());
-        register(new StandardPistolT2().getUniqueID(), new StandardPistolT2());
-        register(new StandardPistolT3().getUniqueID(), new StandardPistolT3());
-        register(new AssaultRifleT1().getUniqueID(), new AssaultRifleT1());
-        register(new AssaultRifleT2().getUniqueID(), new AssaultRifleT2());
+        register(StandardPistol.I().getUniqueID(), StandardPistol.I());
+        register(StandardPistol.II().getUniqueID(), StandardPistol.II());
+        register(StandardPistol.III().getUniqueID(), StandardPistol.III());
+        register(AssaultRifle.I().getUniqueID(), AssaultRifle.I());
+        register(AssaultRifle.II().getUniqueID(), AssaultRifle.II());
     }
 }

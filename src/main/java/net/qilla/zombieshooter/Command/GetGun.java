@@ -18,8 +18,7 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 public class GetGun implements CommandExecutor, TabExecutor {
 
@@ -38,49 +37,11 @@ public class GetGun implements CommandExecutor, TabExecutor {
             return true;
         }
 
-        String inputName = args[0].toUpperCase();
-        String inputTier = args[1];
-
-        String gunName;
-
-        switch (inputName) {
-            case "STANDARDPISTOL": {
-                gunName = "standard_pistol";
-                break;
-            }
-            case "ASSAULTRIFLE": {
-                gunName = "assault_rifle";
-                break;
-            }
-            default: {
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid gun name</red>"));
-                return true;
-            }
-        }
-
-        String gunTier;
-
-        switch(inputTier) {
-            case "1": {
-                gunTier = "tier_1";
-                break;
-            }
-            case "2": {
-                gunTier = "tier_2";
-                break;
-            }
-            case "3": {
-                gunTier = "tier_3";
-                break;
-            }
-            default: {
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid gun tier</red>"));
-                return true;
-            }
-        }
+        String gunName = args[0];
+        String gunTier = args[1];
 
         if(!GunRegistry.getGunRegistry().containsKey(new UniqueID(gunName, gunTier))) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid gun name</red>"));
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Selected gun does not exist.</red>"));
             return true;
         }
 
@@ -113,6 +74,22 @@ public class GetGun implements CommandExecutor, TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        return List.of("standardpistol", "assaultrifle");
+        Map<UniqueID, GunBase> gunRegistry = GunRegistry.getGunRegistry();
+        Map<String, List<String>> gunTypesAndTiers = new HashMap<>();
+
+        for (Map.Entry<UniqueID, GunBase> entry : gunRegistry.entrySet()) {
+            String gunType = entry.getKey().gunType();
+            String gunTier = entry.getKey().gunTier();
+
+            gunTypesAndTiers.computeIfAbsent(gunType, k -> new ArrayList<>()).add(gunTier);
+        }
+
+        if (args.length == 1) {
+            return new ArrayList<>(gunTypesAndTiers.keySet());
+        } else if (args.length == 2 && gunTypesAndTiers.containsKey(args[0])) {
+            return gunTypesAndTiers.get(args[0]);
+        }
+
+        return List.of();
     }
 }
