@@ -1,0 +1,10 @@
+name: ZombieShooter
+version: ${projectVersion}
+main: net.qilla.zombieshooter.ZombieShooter
+api-version: '1.20'
+load: STARTUP
+author: Qilla
+commands:
+  Gun:
+    description: Get a gun
+    usage: /get
