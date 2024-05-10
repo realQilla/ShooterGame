@@ -1,4 +1,4 @@
-package net.qilla.zombieshooter.WeaponSystem.Systems;
+package net.qilla.zombieshooter.GunSystem.GunSkeleton;
 
 import io.papermc.paper.entity.TeleportFlag;
 import org.bukkit.Location;
@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Random;
 
-public class GunRecoil {
+public class GunRecoil extends GunCore {
 
     public void verticalRecoil(Player player, boolean randomized) {
         Location location = player.getLocation();

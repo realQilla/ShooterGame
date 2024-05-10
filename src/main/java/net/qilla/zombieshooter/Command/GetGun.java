@@ -2,11 +2,12 @@ package net.qilla.zombieshooter.Command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunRegistry;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.GunBase;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunRegistry;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
 import net.qilla.zombieshooter.Utils.ItemManagement;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.UniqueID;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.GunID;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -40,13 +41,13 @@ public class GetGun implements CommandExecutor, TabExecutor {
         String gunName = args[0];
         String gunTier = args[1];
 
-        if(!GunRegistry.getGunRegistry().containsKey(new UniqueID(gunName, gunTier))) {
+        if(!GunRegistry.getInstance().getGunRegistry().containsKey(new GunID(gunName, gunTier))) {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Selected gun does not exist.</red>"));
             return true;
         }
 
 
-        GunBase gunType = GunRegistry.getGunRegistry().get(new UniqueID(gunName, gunTier));
+        GunBase gunType = GunRegistry.getInstance().getGunRegistry().get(new GunID(gunName, gunTier));
 
         ItemStack item = new ItemStack(gunType.getGunMaterial());
 
@@ -59,25 +60,26 @@ public class GetGun implements CommandExecutor, TabExecutor {
             }
 
             meta.lore(loreComponents);
-            meta.getPersistentDataContainer().set(GunData.TYPE_GUN.getKey(), PersistentDataType.STRING, gunType.getUniqueID().gunType());
-            meta.getPersistentDataContainer().set(GunData.TIER_GUN.getKey(), PersistentDataType.STRING, gunType.getUniqueID().gunTier());
-            meta.getPersistentDataContainer().set(GunData.GUN_AMMUNITION_CAPACITY.getKey(), PersistentDataType.INTEGER, gunType.getAmmunitionMod().ammoCapacity());
+            meta.getPersistentDataContainer().set(GunData.GUN_TYPE.getKey(), PersistentDataType.STRING, gunType.getTypeID().gunType());
+            meta.getPersistentDataContainer().set(GunData.GUN_TIER.getKey(), PersistentDataType.STRING, gunType.getTypeID().gunTier());
+            meta.getPersistentDataContainer().set(GunData.GUN_UUID.getKey(), PersistentDataType.STRING, String.valueOf(UUID.randomUUID()));
+            meta.getPersistentDataContainer().set(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER, gunType.getAmmunitionMod().gunCapacity());
             meta.getPersistentDataContainer().set(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER, gunType.getAmmunitionMod().gunMagazine());
             meta.getPersistentDataContainer().set(GunData.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER, 0);
-            meta.getPersistentDataContainer().set(GunData.GUN_IS_RELOADING.getKey(), PersistentDataType.BOOLEAN, false);
+            meta.getPersistentDataContainer().set(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, false);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         });
-        player.playSound(player, "minecraft:entity.experience_orb.pickup", 1.0f, 1.0f);
+        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
         new ItemManagement().giveItem(player, item);
         return true;
     }
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Map<UniqueID, GunBase> gunRegistry = GunRegistry.getGunRegistry();
+        Map<GunID, GunBase> gunRegistry = GunRegistry.getInstance().getGunRegistry();
         Map<String, List<String>> gunTypesAndTiers = new HashMap<>();
 
-        for (Map.Entry<UniqueID, GunBase> entry : gunRegistry.entrySet()) {
+        for (Map.Entry<GunID, GunBase> entry : gunRegistry.entrySet()) {
             String gunType = entry.getKey().gunType();
             String gunTier = entry.getKey().gunTier();
 

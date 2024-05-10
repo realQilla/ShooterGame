@@ -1,27 +1,28 @@
-package net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType;
+package net.qilla.zombieshooter.GunSystem.GunCreation.GunType;
 
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.AmmunitionMod;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.CosmeticMod;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.FireMod;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.UniqueID;
-import net.qilla.zombieshooter.WeaponSystem.SoundModel;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.AmmunitionMod;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.CosmeticMod;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.FireMod;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.GunID;
+import net.qilla.zombieshooter.Utils.SoundModel;
 import org.bukkit.Material;
 import org.bukkit.Particle;
+import org.bukkit.Sound;
 
 import java.util.List;
 
 public class StandardPistol extends GunBase {
 
-    private StandardPistol(Material gunMaterial, FireMod[] fireMod, AmmunitionMod ammunitionMod, CosmeticMod cosmeticMod, UniqueID uniqueID, String gunName, List<String> gunLore) {
-        super(gunMaterial, fireMod, ammunitionMod, cosmeticMod, uniqueID, gunName, gunLore);
+    private StandardPistol(Material gunMaterial, FireMod[] fireMod, AmmunitionMod ammunitionMod, CosmeticMod cosmeticMod, GunID gunID, String gunName, List<String> gunLore) {
+        super(gunMaterial, fireMod, ammunitionMod, cosmeticMod, gunID, gunName, gunLore);
     }
 
     public static StandardPistol I() {
         return new StandardPistol(Material.WOODEN_HOE,
                 new FireMod[]{new FireMod("SINGLE", 6, 0, 1, 4.5f, 0.35f, 0.0f, 24)},
-                new AmmunitionMod(96, 8, 4, 10),
-                new CosmeticMod(new SoundModel(1.0f, 1.25f, org.bukkit.Sound.ENTITY_IRON_GOLEM_REPAIR), Particle.CRIT),
-                new UniqueID("standard_pistol", "tier_1"),
+                new AmmunitionMod(96, 8, 2, 20),
+                new CosmeticMod(new SoundModel(0.5f, 1.25f, org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.CRIT),
+                new GunID("standard_pistol", "tier_1"),
                 "<!italic><yellow>Standard Pistol</yellow>",
                 List.of("<!italic><gray>Single fire</gray>",
                         "",
@@ -40,9 +41,9 @@ public class StandardPistol extends GunBase {
     public static StandardPistol II() {
         return new StandardPistol(Material.WOODEN_HOE,
                 new FireMod[]{new FireMod("SINGLE", 8, 0, 1, 6.0f, 0.45f, 0.0f, 32)},
-                new AmmunitionMod(128, 8, 4, 10),
-                new CosmeticMod(new SoundModel(1.0f, 1.25f, org.bukkit.Sound.ENTITY_IRON_GOLEM_REPAIR), Particle.ENCHANTED_HIT),
-                new UniqueID("standard_pistol", "tier_2"),
+                new AmmunitionMod(128, 8, 2, 20),
+                new CosmeticMod(new SoundModel(0.5f, 1.5f, Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.ENCHANTED_HIT),
+                new GunID("standard_pistol", "tier_2"),
                 "<!italic><blue>Standard Pistol</blue>",
                 List.of("<!italic><gray>Single fire</gray>",
                         "",
@@ -61,9 +62,9 @@ public class StandardPistol extends GunBase {
     public static StandardPistol III() {
         return new StandardPistol(Material.WOODEN_HOE,
                 new FireMod[]{new FireMod("BURST", 10, 3, 2, 4.8f, 0.3f, 0.0f, 32)},
-                new AmmunitionMod(192, 16, 6, 10),
-                new CosmeticMod(new SoundModel(1.0f, 1.25f, org.bukkit.Sound.ENTITY_IRON_GOLEM_REPAIR), Particle.ENCHANTED_HIT),
-                new UniqueID("standard_pistol", "tier_3"),
+                new AmmunitionMod(192, 16, 4, 20),
+                new CosmeticMod(new SoundModel(0.5f, 2.0f, Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.ENCHANTED_HIT),
+                new GunID("standard_pistol", "tier_3"),
                 "<!italic><dark_purple>Standard Pistol</dark_purple>",
                 List.of("<!italic><gray>Burst fire</gray>",
                         "",

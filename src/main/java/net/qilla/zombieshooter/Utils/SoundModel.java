@@ -1,4 +1,4 @@
-package net.qilla.zombieshooter.WeaponSystem;
+package net.qilla.zombieshooter.Utils;
 
 import org.bukkit.Sound;
 

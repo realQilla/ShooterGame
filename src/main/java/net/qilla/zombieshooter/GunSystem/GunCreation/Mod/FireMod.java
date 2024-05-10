@@ -1,4 +1,4 @@
-package net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod;
+package net.qilla.zombieshooter.GunSystem.GunCreation.Mod;
 
 public record FireMod(String modeName, int fireCooldown, int perBulletCooldown, int bulletAmount, float bulletDamage, float bulletKnockback, float bulletSpread, int bulletRange) {
 

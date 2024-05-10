@@ -4,9 +4,13 @@ import java.util.Random;
 
 public class Randomizer {
 
-    public float standard(float min, float max) {
+    public float between(float min, float max) {
         Random random = new Random();
-        float num = random.nextFloat(max - min) + max;
-        return num;
+        return random.nextFloat() * (max - min) + min;
+    }
+
+    public double between(double min, double max) {
+        Random random = new Random();
+        return random.nextDouble() * (max - min) + min;
     }
 }

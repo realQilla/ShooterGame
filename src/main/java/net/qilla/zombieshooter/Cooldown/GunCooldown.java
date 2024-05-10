@@ -1,7 +1,7 @@
 package net.qilla.zombieshooter.Cooldown;
 
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunData;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType.GunBase;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
 import net.qilla.zombieshooter.ZombieShooter;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -61,7 +61,7 @@ public class GunCooldown {
 
     public boolean nonRemovingCooldown(Player player, ActionCooldown action, boolean start) {
         CDPlayer cdPlayer = new CDPlayer(player.getUniqueId(), action);
-        long setTime = System.currentTimeMillis() + (action.ticks * 5);
+        long setTime = System.currentTimeMillis() + (action.ticks * 50);
         if(callRemovingCooldown.get(cdPlayer) != null && callRemovingCooldown.get(cdPlayer) > System.currentTimeMillis()) {
             if(start) {
                 //Overwrite cooldown
@@ -107,7 +107,7 @@ public class GunCooldown {
     }
 
     public enum ActionCooldown {
-        FIRED_GUN(0), ACTION_PREVENTS_RELOAD(10), RECENT_RELOAD(10), MODE_CHANGE(10);
+        FIRED_GUN(0), ACTION_PREVENTS_RELOAD(12), RECENT_RELOAD(10), MODE_CHANGE(10);
 
         final long ticks;
 

@@ -1,10 +1,10 @@
-package net.qilla.zombieshooter.WeaponSystem.GunCreation.GunType;
+package net.qilla.zombieshooter.GunSystem.GunCreation.GunType;
 
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.AmmunitionMod;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.CosmeticMod;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.FireMod;
-import net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod.UniqueID;
-import net.qilla.zombieshooter.WeaponSystem.SoundModel;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.AmmunitionMod;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.CosmeticMod;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.FireMod;
+import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.GunID;
+import net.qilla.zombieshooter.Utils.SoundModel;
 import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
@@ -14,16 +14,16 @@ import java.util.List;
 public class AssaultRifle extends GunBase {
 
 
-    private AssaultRifle(Material gunMaterial, FireMod[] fireMod, AmmunitionMod ammunitionMod, CosmeticMod cosmeticMod, UniqueID uniqueID, String gunName, List<String> gunLore) {
-        super(gunMaterial, fireMod, ammunitionMod, cosmeticMod, uniqueID, gunName, gunLore);
+    private AssaultRifle(Material gunMaterial, FireMod[] fireMod, AmmunitionMod ammunitionMod, CosmeticMod cosmeticMod, GunID gunID, String gunName, List<String> gunLore) {
+        super(gunMaterial, fireMod, ammunitionMod, cosmeticMod, gunID, gunName, gunLore);
     }
 
     public static AssaultRifle I() {
         return new AssaultRifle(Material.IRON_HOE,
                 new FireMod[]{new FireMod("BURST",10, 2, 3, 3.0f, 0.30f, 0.0f, 64), new FireMod("SINGLE",5, 0, 1, 4.0f, 0.25f, 0.0f, 64)},
-                new AmmunitionMod(192, 30, 6, 10),
-                new CosmeticMod(new SoundModel(1.0f, 1.50f, Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.ENCHANTED_HIT),
-                new UniqueID("assault_rifle", "tier_1"),
+                new AmmunitionMod(192, 20, 4, 20),
+                new CosmeticMod(new SoundModel(0.50f, 2.0f, Sound.ENTITY_IRON_GOLEM_REPAIR), Particle.ENCHANTED_HIT),
+                new GunID("assault_rifle", "tier_1"),
                 "<!italic><blue>Assault Rifle</blue>",
                 List.of("<!italic><gray>Burst & Single fire</gray>",
                         "",
@@ -44,9 +44,9 @@ public class AssaultRifle extends GunBase {
     public static AssaultRifle II() {
         return new AssaultRifle(Material.IRON_HOE,
                 new FireMod[]{new FireMod("AUTO", 4, 2, 2, 3.0f, 0.30f, 0.0f, 64)},
-                new AmmunitionMod(192, 30, 6, 10),
-                new CosmeticMod(new SoundModel(1.0f, 1.50f, Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.ENCHANTED_HIT),
-                new UniqueID("assault_rifle", "tier_2"),
+                new AmmunitionMod(192, 30, 4, 20),
+                new CosmeticMod(new SoundModel(0.50f, 2.0f, Sound.ENTITY_IRON_GOLEM_REPAIR), Particle.ENCHANTED_HIT),
+                new GunID("assault_rifle", "tier_2"),
                 "<!italic><blue>Assault Rifle</blue>",
                 List.of("<!italic><gray>Automatic fire</gray>",
                         "",

@@ -1,5 +1,6 @@
 plugins {
     id("java")
+    id("io.papermc.paperweight.userdev") version "1.7.0"
 }
 
 group = "net.qilla"
@@ -12,18 +13,12 @@ java {
 repositories {
     mavenCentral()
     maven("https://repo.papermc.io/repository/maven-public/")
-    maven {
-        url = uri("https://repo.papermc.io/repository/maven-public/")
-    }
-    maven(url = "https://s01.oss.sonatype.org/content/repositories/snapshots/") {
-        name = "sonatype-oss-snapshots"
-    }
+    maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
-
 dependencies {
-    compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
-    implementation("net.kyori:adventure-api:4.16.0")
+    paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
+    implementation("net.kyori:adventure-api:4.17.0")
 }
 
 tasks.register<Jar>("exportJar") {
@@ -31,7 +26,7 @@ tasks.register<Jar>("exportJar") {
     archiveBaseName.set(project.name)
     archiveVersion.set(project.version.toString())
     from(sourceSets.main.get().output)
-    destinationDirectory.set(file("C:\\Users\\Richard\\Development\\DevServerLatest\\plugins"))
+    destinationDirectory.set(file("C:\\Users\\Richard\\Development\\Servers\\Latest\\plugins"))
 }
 
 tasks.named("build") {

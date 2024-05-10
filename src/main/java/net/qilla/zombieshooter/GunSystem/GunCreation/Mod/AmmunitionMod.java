@@ -1,6 +1,6 @@
-package net.qilla.zombieshooter.WeaponSystem.GunCreation.Mod;
+package net.qilla.zombieshooter.GunSystem.GunCreation.Mod;
 
-public record AmmunitionMod(int ammoCapacity, int gunMagazine, int reloadStages, int ticksPerStage) {
+public record AmmunitionMod(int gunCapacity, int gunMagazine, int reloadStages, int ticksPerStage) {
 
     /**
      * Default constructor for the AmmunitionMod
@@ -11,14 +11,14 @@ public record AmmunitionMod(int ammoCapacity, int gunMagazine, int reloadStages,
     }
 
     /**
-     * @param ammoCapacity Bullet capacity of the gun excluding the magazine
+     * @param gunCapacity Bullet capacity of the gun excluding the magazine
      * @param gunMagazine Bullet capacity of the magazine
      * @param reloadStages Number of stages in the gun reload
      * @param ticksPerStage Number of ticks per stage of reload
      */
 
-    public AmmunitionMod(int ammoCapacity, int gunMagazine, int reloadStages, int ticksPerStage) {
-        this.ammoCapacity = ammoCapacity;
+    public AmmunitionMod(int gunCapacity, int gunMagazine, int reloadStages, int ticksPerStage) {
+        this.gunCapacity = gunCapacity;
         this.gunMagazine = gunMagazine;
         this.reloadStages = reloadStages;
         this.ticksPerStage = ticksPerStage;
