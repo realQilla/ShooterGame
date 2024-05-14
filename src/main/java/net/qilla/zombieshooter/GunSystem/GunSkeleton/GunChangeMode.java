@@ -3,7 +3,7 @@ package net.qilla.zombieshooter.GunSystem.GunSkeleton;
 import net.qilla.zombieshooter.Cooldown.GunCooldown;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunRegistry;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
-import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import net.qilla.zombieshooter.GunSystem.GunUtils.GetFromGun;
 import net.qilla.zombieshooter.Utils.SoundModel;
 import org.bukkit.entity.Player;
@@ -33,11 +33,11 @@ public class GunChangeMode extends GunCore {
     }
 
     private int getNextFireMode(@NotNull GunBase gunType, @NotNull PersistentDataContainer dataContainer) {
-        int fireMod = dataContainer.get(GunData.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
+        int fireMod = dataContainer.get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
         return fireMod == gunType.getFireMod().length - 1 ? 0 : fireMod + 1;
     }
 
     private void updateFireMode(@NotNull ItemStack gunItem, int fireMod) {
-        gunItem.editMeta(meta -> meta.getPersistentDataContainer().set(GunData.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER, fireMod));
+        gunItem.editMeta(meta -> meta.getPersistentDataContainer().set(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER, fireMod));
     }
 }

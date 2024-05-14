@@ -3,7 +3,7 @@ package net.qilla.zombieshooter.GunSystem.GunCreation;
 import net.qilla.zombieshooter.ZombieShooter;
 import org.bukkit.NamespacedKey;
 
-public enum GunData {
+public enum GunPDC {
 
     GUN_TYPE(new NamespacedKey(ZombieShooter.getInstance(), "gun_type")),
     GUN_TIER(new NamespacedKey(ZombieShooter.getInstance(), "gun_tier")),
@@ -15,7 +15,7 @@ public enum GunData {
 
     final NamespacedKey key;
 
-    GunData(NamespacedKey key) {
+    GunPDC(NamespacedKey key) {
         this.key = key;
     }
 

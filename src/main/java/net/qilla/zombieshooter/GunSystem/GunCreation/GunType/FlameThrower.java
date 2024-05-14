@@ -20,7 +20,7 @@ public class FlameThrower extends GunBase {
 
     public static FlameThrower I() {
         return new FlameThrower(Material.GOLDEN_HOE,
-                new FireMod[]{new FireMod("Automatic",4, 2, 2, 0.5f, 0.30f, 0.0f, 32)},
+                new FireMod[]{new FireMod("Automatic",4, 2, 2, 1f, 0.30f, 0.0f, 32)},
                 new AmmunitionMod(320, 48, 6, 10),
                 new CosmeticMod(new SoundModel(1.0f, 1.0f, Sound.BLOCK_LAVA_POP), Particle.FLAME),
                 new GunID("flame_thrower", "tier_1"),
@@ -28,7 +28,7 @@ public class FlameThrower extends GunBase {
                 List.of("<!italic><gray>Automatic fire</gray>",
                         "",
                         "<!italic><dark_aqua>⏳</dark_aqua> <gray>Fire rate:</gray> <white>10.0/s</white>",
-                        "<!italic><red>\uD83D\uDDE1</red> <gray>Damage:</gray> <white>0.5 ♥</white>",
+                        "<!italic><red>\uD83D\uDDE1</red> <gray>Damage:</gray> <white>1 ♥</white>",
                         "<!italic><gold>\uD83C\uDFF9</gold> <gray>Range:</gray> <white>32/b</white>",
                         "",
                         "<!italic><dark_gray>»</dark_gray> <yellow><bold>CLICK F</bold></yellow> <gray>to reload your weapon</gray>",

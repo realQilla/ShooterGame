@@ -3,7 +3,7 @@ package net.qilla.zombieshooter.GunSystem.GunSkeleton;
 import net.qilla.zombieshooter.Cooldown.GunCooldown;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunRegistry;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
-import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import net.qilla.zombieshooter.GunSystem.GunUtils.CheckValid;
 import net.qilla.zombieshooter.GunSystem.GunUtils.GetFromGun;
 import net.qilla.zombieshooter.Utils.SoundModel;
@@ -26,7 +26,7 @@ public class GunReload extends GunCore {
         ItemStack gunItem = player.getInventory().getItemInMainHand();
         PersistentDataContainer dataContainer = gunItem.getItemMeta().getPersistentDataContainer();
         GunBase gunType = GunRegistry.getInstance().getGun(GetFromGun.typeID(dataContainer));
-        String uniqueID = dataContainer.get(GunData.GUN_UUID.getKey(), PersistentDataType.STRING);
+        String uniqueID = dataContainer.get(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING);
 
         if(canReload(player, dataContainer)) return;
 
@@ -37,7 +37,7 @@ public class GunReload extends GunCore {
          * Check if a reload is even possible by checking the current capacity
          */
 
-        if(dataContainer.get(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER) <= 0) {
+        if(dataContainer.get(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER) <= 0) {
             SoundModel reloadSound = gunType.getCosmeticMod().emptyCapacity();
             player.playSound(player.getLocation(), reloadSound.getSound(), reloadSound.getVolume(), reloadSound.getPitch());
             return;
@@ -85,8 +85,8 @@ public class GunReload extends GunCore {
             int amountInStage = Math.min(magazineBulletsFill, amountPerStage);
             magazineBulletsFill -= amountInStage;
 
-            int currentMagazine = dataContainer.get(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
-            int currentCapacity = dataContainer.get(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
+            int currentMagazine = dataContainer.get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
+            int currentCapacity = dataContainer.get(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
 
             updateMagazineDisplay(gunItem, gunType, amountInStage);
             updateAmmunitionMeta(gunItem, amountInStage, currentMagazine, currentCapacity);
@@ -107,14 +107,14 @@ public class GunReload extends GunCore {
             gunItem.editMeta(meta -> {
                 PersistentDataContainer dataContainer = meta.getPersistentDataContainer();
 
-                dataContainer.set(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER, currentCapacity - amountInStage);
-                dataContainer.set(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER, currentMagazine + amountInStage);
+                dataContainer.set(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER, currentCapacity - amountInStage);
+                dataContainer.set(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER, currentMagazine + amountInStage);
             });
         }
 
         private void updateMagazineDisplay(ItemStack gunItem, GunBase gunType, int amountInStage) {
             gunItem.editMeta(meta -> {
-                int currentMagazine = meta.getPersistentDataContainer().get(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
+                int currentMagazine = meta.getPersistentDataContainer().get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
                 ((Damageable) meta).setDamage((gunType.getAmmunitionMod().gunMagazine() - (currentMagazine + amountInStage)) * (gunItem.getType().getMaxDurability() / gunType.getAmmunitionMod().gunMagazine()));
             });
         }
@@ -122,11 +122,11 @@ public class GunReload extends GunCore {
     private boolean canReload(Player player, PersistentDataContainer dataContainer) {
         return GunCooldown.getInstance().nonRemovingCooldown(player, GunCooldown.ActionCooldown.ACTION_PREVENTS_RELOAD, false) ||
                 GunCooldown.getInstance().genericCooldown(player, GunCooldown.ActionCooldown.RECENT_RELOAD, true) ||
-                Boolean.TRUE.equals(dataContainer.get(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN));
+                Boolean.TRUE.equals(dataContainer.get(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN));
     }
 
     private int getBulletsNeeded(GunBase gunType, PersistentDataContainer dataContainer) {
-        return Math.min(dataContainer.get(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER), gunType.getAmmunitionMod().gunMagazine() - dataContainer.get(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER));
+        return Math.min(dataContainer.get(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER), gunType.getAmmunitionMod().gunMagazine() - dataContainer.get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER));
     }
 
     private int getAmountPerStage(GunBase gunType) {
@@ -135,7 +135,7 @@ public class GunReload extends GunCore {
 
     private void setReloading(ItemStack gunItem, boolean status) {
         gunItem.editMeta(ItemMeta.class, itemMeta -> {
-            itemMeta.getPersistentDataContainer().set(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, status);
+            itemMeta.getPersistentDataContainer().set(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, status);
             gunItem.setItemMeta(itemMeta);
         });
     }

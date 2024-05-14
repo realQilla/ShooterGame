@@ -1,6 +1,6 @@
 package net.qilla.zombieshooter.GunSystem.GunUtils;
 
-import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
@@ -26,7 +26,7 @@ public class CheckValid {
      */
 
     public static boolean isValidGun(PersistentDataContainer dataContainer) {
-        return dataContainer.has(GunData.GUN_TYPE.getKey()) && dataContainer.has(GunData.GUN_TIER.getKey());
+        return dataContainer.has(GunPDC.GUN_TYPE.getKey()) && dataContainer.has(GunPDC.GUN_TIER.getKey());
     }
 
     /**
@@ -41,26 +41,26 @@ public class CheckValid {
     }
 
     public static boolean isSameGun(PersistentDataContainer dataContainer, String gunUniqueID) {
-        return Objects.equals(dataContainer.get(GunData.GUN_UUID.getKey(), PersistentDataType.STRING), gunUniqueID);
+        return Objects.equals(dataContainer.get(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING), gunUniqueID);
     }
 
     public static boolean hasUniqueIDPDC(PersistentDataContainer dataContainer) {
-        return dataContainer.has(GunData.GUN_UUID.getKey(), PersistentDataType.STRING);
+        return dataContainer.has(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING);
     }
 
     public static boolean hasMagazinePDC(PersistentDataContainer dataContainer) {
-        return dataContainer.has(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
+        return dataContainer.has(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
     }
 
     public static boolean hasCapacityPDC(PersistentDataContainer dataContainer) {
-        return dataContainer.has(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
+        return dataContainer.has(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
     }
 
     public static boolean hasFireModePDC(PersistentDataContainer dataContainer) {
-        return dataContainer.has(GunData.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
+        return dataContainer.has(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
     }
 
     public static boolean hasReloadPDC(PersistentDataContainer dataContainer) {
-        return dataContainer.has(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN);
+        return dataContainer.has(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN);
     }
 }

@@ -1,7 +1,7 @@
 package net.qilla.zombieshooter.GunSystem.GunSkeleton;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunRegistry;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
 import net.qilla.zombieshooter.GunSystem.GunUtils.CheckValid;
@@ -16,10 +16,11 @@ import org.bukkit.scheduler.BukkitTask;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 public class GunDisplay {
 
-    private static final Map<Player, GunDisplay> displayMap = new HashMap<>();
+    private static final Map<UUID, GunDisplay> gunStatDisplay = new HashMap<>();
 
     private BukkitTask displayTask;
     private final Player player;
@@ -31,23 +32,10 @@ public class GunDisplay {
 
     public GunDisplay(Player player) {
         this.player = player;
-        displayMap.put(player, this);
+        gunStatDisplay.put(player.getUniqueId(), this);
     }
 
-    public static GunDisplay getDisplayMap(Player player) {
-        return displayMap.get(player);
-    }
-
-    public void remove() {
-        displayMap.remove(player);
-        if(displayTask != null) {
-            displayTask.cancel();
-            displayTask = null;
-        }
-    }
-
-    public void display() {
-
+    public void displayLoop() {
         displayTask = new BukkitRunnable() {
             @Override
             public void run() {
@@ -68,7 +56,7 @@ public class GunDisplay {
             String currentMode = gunType.getFireMod()[this.currentMode].modeName();
             player.sendActionBar(MiniMessage.miniMessage().deserialize("<!italic><gold>☄</gold> <white>" + currentMagazine + "</white> | <dark_aqua>\uD83D\uDD25</dark_aqua> <white>" + currentMode + "</white>"));
         } else {
-            player.sendActionBar(MiniMessage.miniMessage().deserialize(""));
+            player.sendActionBar(MiniMessage.miniMessage().deserialize("nothing"));
         }
     }
 
@@ -76,10 +64,10 @@ public class GunDisplay {
         if(CheckValid.isValidBoth(item)) {
             PersistentDataContainer dataContainer = item.getItemMeta().getPersistentDataContainer();
             gunType = GunRegistry.getInstance().getGun(GetFromGun.typeID(dataContainer));
-            currentMagazine = dataContainer.get(GunData.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
-            currentCapacity = dataContainer.get(GunData.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
-            currentMode = dataContainer.get(GunData.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
-            gunUniqueID = dataContainer.get(GunData.GUN_UUID.getKey(), PersistentDataType.STRING);
+            currentMagazine = dataContainer.get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
+            currentCapacity = dataContainer.get(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
+            currentMode = dataContainer.get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
+            gunUniqueID = dataContainer.get(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING);
         } else {
             clearFields();
         }
@@ -125,12 +113,24 @@ public class GunDisplay {
             displayTask.cancel();
             displayTask = null;
         }
-        display();
+        displayLoop();
     }
 
     private void setAmmoDisplay(Player player, Integer ammo) {
         if (ammo < 0) ammo = 0;
         player.setLevel(ammo);
         player.setExp(0);
+    }
+
+    public static GunDisplay getDisplayMap(Player player) {
+        return gunStatDisplay.get(player.getUniqueId());
+    }
+
+    public void remove() {
+        gunStatDisplay.remove(player.getUniqueId());
+        if(displayTask != null) {
+            displayTask.cancel();
+            displayTask = null;
+        }
     }
 }

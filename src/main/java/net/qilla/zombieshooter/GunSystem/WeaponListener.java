@@ -1,6 +1,6 @@
 package net.qilla.zombieshooter.GunSystem;
 
-import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import net.qilla.zombieshooter.GunSystem.GunUtils.CheckValid;
 import net.qilla.zombieshooter.GunSystem.GunSkeleton.GunChangeMode;
 import net.qilla.zombieshooter.GunSystem.GunSkeleton.GunDisplay;
@@ -56,15 +56,15 @@ public class WeaponListener implements Listener {
 
         GunReload.getInstance().cancelReload();
         if(CheckValid.isValidBoth(prevItem)) {
-            if (prevItem.getItemMeta().getPersistentDataContainer().get(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN)) {
+            if (prevItem.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN)) {
                 prevItem.editMeta(ItemMeta.class, meta -> {
-                    meta.getPersistentDataContainer().set(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, false);
+                    meta.getPersistentDataContainer().set(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, false);
                     prevItem.setItemMeta(meta);
                 });
             }
         }
 
-        GunDisplay.getDisplayMap(player).updateGunFields(curItem, true);
+        //GunDisplay.getDisplayMap(player).updateGunFields(curItem, true);
     }
 
     @EventHandler
@@ -72,9 +72,9 @@ public class WeaponListener implements Listener {
         ItemStack clickedItem = event.getCurrentItem();
 
         if (CheckValid.isValidBoth(clickedItem)) {
-            if (clickedItem.getItemMeta().getPersistentDataContainer().get(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN)) {
+            if (clickedItem.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN)) {
                 clickedItem.editMeta(ItemMeta.class, meta -> {
-                    meta.getPersistentDataContainer().set(GunData.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, false);
+                    meta.getPersistentDataContainer().set(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, false);
                     clickedItem.setItemMeta(meta);
                 });
             }
@@ -84,17 +84,17 @@ public class WeaponListener implements Listener {
     @EventHandler
     public void playerDamageWeapon(PlayerItemDamageEvent event) {
         ItemStack item = event.getItem();
-        if (item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(GunData.GUN_TYPE.getKey())) {
+        if (item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(GunPDC.GUN_TYPE.getKey())) {
             event.setCancelled(true);
         }
     }
 
-    @EventHandler
+    //@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
-        new GunDisplay(event.getPlayer()).display();
+        new GunDisplay(event.getPlayer()).displayLoop();
     }
 
-    @EventHandler
+    //@EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         GunDisplay.getDisplayMap(event.getPlayer()).remove();
     }

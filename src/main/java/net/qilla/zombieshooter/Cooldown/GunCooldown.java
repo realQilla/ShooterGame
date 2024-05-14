@@ -1,6 +1,6 @@
 package net.qilla.zombieshooter.Cooldown;
 
-import net.qilla.zombieshooter.GunSystem.GunCreation.GunData;
+import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
 import net.qilla.zombieshooter.ZombieShooter;
 import org.bukkit.entity.Player;
@@ -87,7 +87,7 @@ public class GunCooldown {
 
     public boolean fireCooldown(Player player, GunBase gunType, ItemStack gunItem, boolean start) {
         CDPlayer cdPlayer = new CDPlayer(player.getUniqueId(), FIRED_GUN);
-        int fireMode = gunItem.getItemMeta().getPersistentDataContainer().get(GunData.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
+        int fireMode = gunItem.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
         if (selfRemovingCooldown.contains(cdPlayer)) {
             return true;
         } else if(start) {
