@@ -14,9 +14,9 @@ public abstract class StatCore {
         this.playerUUID = playerUUID;
     }
 
-    protected boolean hasStats() {
-        return playerStatMap.containsKey(playerUUID);
-    }
+    /**
+     * Most stat management
+     */
 
     protected StatModel getStats() {
         return playerStatMap.get(playerUUID);
@@ -31,11 +31,10 @@ public abstract class StatCore {
         playerHealthMap.remove(playerUUID);
     }
 
-
-
-    protected boolean hasHealth() {
-        return playerHealthMap.containsKey(playerUUID);
-    }
+    /**
+     * Current-health management, it's outside the stat model, so I don't
+     * have to call the full model each time the player health is changed.
+     */
 
     protected long getHealth() {
         return playerHealthMap.get(playerUUID);

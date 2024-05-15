@@ -44,9 +44,15 @@ public class GetGun implements CommandExecutor, TabExecutor {
             return true;
         }
 
-
         GunBase gunType = GunRegistry.getInstance().getGunRegistry().get(new GunID(gunName, gunTier));
 
+        ItemStack item = getItemStack(gunType);
+        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
+        new ItemManagement().giveItem(player, item);
+        return true;
+    }
+
+    private static @NotNull ItemStack getItemStack(GunBase gunType) {
         ItemStack item = new ItemStack(gunType.getGunMaterial());
         item.editMeta(meta -> {
             meta.displayName(MiniMessage.miniMessage().deserialize(gunType.getGunName()));
@@ -58,18 +64,15 @@ public class GetGun implements CommandExecutor, TabExecutor {
 
             meta.lore(loreComponents);
             meta.getPersistentDataContainer().set(GunPDC.GUN_TYPE.getKey(), PersistentDataType.STRING, gunType.getTypeID().gunType());
-            meta.getPersistentDataContainer().set(GunPDC.GUN_TIER.getKey(), PersistentDataType.STRING, gunType.getTypeID().gunTier());
+            meta.getPersistentDataContainer().set(GunPDC.GUN_TIER.getKey(), PersistentDataType.STRING, String.valueOf(gunType.getTypeID().tier()));
             meta.getPersistentDataContainer().set(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING, String.valueOf(UUID.randomUUID()));
             meta.getPersistentDataContainer().set(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER, gunType.getAmmunitionMod().gunCapacity());
             meta.getPersistentDataContainer().set(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER, gunType.getAmmunitionMod().gunMagazine());
             meta.getPersistentDataContainer().set(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER, 0);
             meta.getPersistentDataContainer().set(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN, false);
-            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_DAMAGE);
-            meta.removeAttributeModifier(Attribute.GENERIC_ATTACK_SPEED);
+            meta.setAttributeModifiers(null);
         });
-        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
-        new ItemManagement().giveItem(player, item);
-        return true;
+        return item;
     }
 
     @Override
@@ -78,7 +81,7 @@ public class GetGun implements CommandExecutor, TabExecutor {
 
         for (Map.Entry<GunID, GunBase> entry : GunRegistry.getInstance().getGunRegistry().entrySet()) {
             String gunType = entry.getKey().gunType();
-            String gunTier = entry.getKey().gunTier();
+            String gunTier = entry.getKey().tier();
 
             gunTypesAndTiers.computeIfAbsent(gunType, k -> new ArrayList<>()).add(gunTier);
         }

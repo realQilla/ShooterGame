@@ -72,7 +72,7 @@ public class Indicator {
                     new Vector3f(0.35f, 0.35f, 0.35f),
                     new Quaternionf(0, 0, 0, 1));
             craftTextDisplay.setTransformation(transformation);
-            craftTextDisplay.setViewRange(16f);
+            craftTextDisplay.setViewRange(16);
 
             nmsPlayer.connection.sendPacket(new ClientboundAddEntityPacket(craftTextDisplay.getHandle(), craftTextDisplay.getHandle().getId()));
             List<SynchedEntityData.DataValue<?>> dataList = craftTextDisplay.getHandle().getEntityData().packAll();

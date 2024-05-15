@@ -22,7 +22,7 @@ public class StandardPistol extends GunBase {
                 new FireMod[]{new FireMod("SINGLE", 6, 0, 1, 4.5f, 0.35f, 0.0f, 24)},
                 new AmmunitionMod(96, 8, 2, 20),
                 new CosmeticMod(new SoundModel(0.5f, 1.25f, org.bukkit.Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.CRIT),
-                new GunID("standard_pistol", "tier_1"),
+                new GunID("standard_pistol", GunID.Tier.I.getTier()),
                 "<!italic><yellow>Standard Pistol</yellow>",
                 List.of("<!italic><gray>Single fire</gray>",
                         "",
@@ -34,7 +34,7 @@ public class StandardPistol extends GunBase {
                         "",
                         "<!italic><gray>Standard weapon with below average stats.</gray>",
                         "",
-                        "<!italic><white><bold>STANDARD WEAPON</white>")
+                        "<!italic><yellow><bold>STANDARD WEAPON</yellow>")
         );
     }
 
@@ -43,7 +43,7 @@ public class StandardPistol extends GunBase {
                 new FireMod[]{new FireMod("SINGLE", 5, 0, 1, 6.0f, 0.45f, 0.0f, 32)},
                 new AmmunitionMod(128, 8, 2, 20),
                 new CosmeticMod(new SoundModel(0.5f, 1.5f, Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.ENCHANTED_HIT),
-                new GunID("standard_pistol", "tier_2"),
+                new GunID("standard_pistol", GunID.Tier.II.getTier()),
                 "<!italic><blue>Standard Pistol</blue>",
                 List.of("<!italic><gray>Single fire</gray>",
                         "",
@@ -64,7 +64,7 @@ public class StandardPistol extends GunBase {
                 new FireMod[]{new FireMod("BURST", 10, 3, 2, 4.0f, 0.3f, 0.0f, 32)},
                 new AmmunitionMod(192, 16, 4, 20),
                 new CosmeticMod(new SoundModel(0.5f, 2.0f, Sound.ENTITY_FIREWORK_ROCKET_BLAST), Particle.ENCHANTED_HIT),
-                new GunID("standard_pistol", "tier_3"),
+                new GunID("standard_pistol", GunID.Tier.III.getTier()),
                 "<!italic><dark_purple>Standard Pistol</dark_purple>",
                 List.of("<!italic><gray>Burst fire</gray>",
                         "",

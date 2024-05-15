@@ -90,8 +90,8 @@ public class GunReload extends GunCore {
 
             updateMagazineDisplay(gunItem, gunType, amountInStage);
             updateAmmunitionMeta(gunItem, amountInStage, currentMagazine, currentCapacity);
-            GunDisplay.getDisplayMap(player).setCurrentMagazine(currentMagazine + amountInStage);
-            GunDisplay.getDisplayMap(player).setCurrentCapacity(currentCapacity - amountInStage);
+            //GunDisplay.getDisplayMap(player).setCurrentMagazine(currentMagazine + amountInStage);
+            //GunDisplay.getDisplayMap(player).setCurrentCapacity(currentCapacity - amountInStage);
 
             if(magazineBulletsFill <= 0) {
                 SoundModel reloadMagazineEnd = gunType.getCosmeticMod().reloadMagazineEnd();

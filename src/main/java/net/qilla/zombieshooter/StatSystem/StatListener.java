@@ -1,8 +1,7 @@
 package net.qilla.zombieshooter.StatSystem;
 
-import net.qilla.zombieshooter.StatSystem.ActionBar.StatDisplay;
+import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import net.qilla.zombieshooter.StatSystem.HealthCalculation.DamageCalc;
-import net.qilla.zombieshooter.StatSystem.HealthCalculation.HealCalc;
 import net.qilla.zombieshooter.StatSystem.StatManagement.StatManager;
 import net.qilla.zombieshooter.StatSystem.TagDisplay.HealthDisplay;
 import org.bukkit.entity.LivingEntity;
@@ -12,11 +11,12 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
+import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 
-public final class HealthListener implements Listener {
+public final class StatListener implements Listener {
 
     @EventHandler
     private void onDamage(final EntityDamageEvent event) {
@@ -33,9 +33,8 @@ public final class HealthListener implements Listener {
     }
 
     @EventHandler
-    private void onHeal(final EntityRegainHealthEvent event) {
-        if (!(event.getEntity() instanceof Player player)) return;
-        new HealCalc(player, Math.round(event.getAmount())).healMain();
+    private void onEntityRegainHealth(final EntityRegainHealthEvent event) {
+        event.setAmount(0);
     }
 
     @EventHandler
@@ -45,24 +44,35 @@ public final class HealthListener implements Listener {
     }
 
     @EventHandler
-    private void onPlayerQuit(PlayerQuitEvent event) {
+    private void onPlayerQuit(final PlayerQuitEvent event) {
         Player player = event.getPlayer();
 
         StatManager.getStatManager(player.getUniqueId()).clear();
-        StatDisplay.getStatDisplay(player.getUniqueId()).remove();
     }
 
     @EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
+    private void onPlayerJoin(final PlayerJoinEvent event) {
         Player player = event.getPlayer();
 
         new StatManager(player);
     }
 
     @EventHandler
-    public void onPlayerRespawn(PlayerRespawnEvent event) {
+    private void onPlayerRespawn(final PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
         StatManager.getStatManager(player.getUniqueId()).resetHealth();
+    }
+
+    @EventHandler
+    private void onPlayerArmorChange(final PlayerArmorChangeEvent event) {
+        Player player = event.getPlayer();
+
+        StatManager.getStatManager(player.getUniqueId()).updateArmor();
+    }
+
+    @EventHandler
+    private void onPlayerItemDamage(PlayerItemDamageEvent event) {
+        event.setCancelled(true);
     }
 }

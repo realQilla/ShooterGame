@@ -20,11 +20,19 @@ public class StatModel {
         return defence;
     }
 
+    public long getRegeneration() {
+        return regeneration;
+    }
+
     public void setMaxHealth() {
         this.maxHealth = defence;
     }
 
     public void setDefence(long playerDefence) {
         this.defence = playerDefence;
+    }
+
+    public void setRegeneration(long playerRegeneration) {
+        this.regeneration = playerRegeneration;
     }
 }

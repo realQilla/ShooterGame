@@ -10,13 +10,13 @@ import java.util.List;
 
 public abstract class GunBase {
 
-    final Material gunMaterial;
-    final FireMod[] fireMod;
-    final AmmunitionMod ammunitionMod;
-    final CosmeticMod cosmeticMod;
-    final GunID gunID;
-    final String gunName;
-    final List<String> gunLore;
+    private final Material gunMaterial;
+    private final FireMod[] fireMod;
+    private final AmmunitionMod ammunitionMod;
+    private final CosmeticMod cosmeticMod;
+    private final GunID gunID;
+    private final String gunName;
+    private final List<String> gunLore;
 
     GunBase(Material gunMaterial, FireMod[] fireMod, AmmunitionMod ammunitionMod, CosmeticMod cosmeticMod, GunID gunID, String gunName, List<String> gunLore) {
         this.gunMaterial = gunMaterial;

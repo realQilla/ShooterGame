@@ -28,11 +28,11 @@ public final class DamageCalc {
         this.maxHealth = statManager.getStats().getMaxHealth();
         this.defence = statManager.getStats().getDefence();
         this.currentHealth = statManager.getHealth();
-        this.damageAmount = getNeededDamage(damageAmount);
+        this.damageAmount = getNeededDamage(defenceCalc(damageAmount));
     }
 
     public void damageMain() {
-        statManager.modifyHealth(damageAmount, StatManager.Type.REMOVE);
+        statManager.removeHealth(damageAmount);
         setHealthBar();
         new Indicator(sourceReceiver.getLocation(), Indicator.IndicatorType.DAMAGE, damageAmount).mainIndicator();
         new HealthDisplay(sourceReceiver, new HealthDifference(currentHealth, damageAmount), HealthDisplay.DisplayType.DAMAGE).updateHealthDisplay();
@@ -45,6 +45,10 @@ public final class DamageCalc {
         } else {
             return damageAmount;
         }
+    }
+
+    private long defenceCalc(long damageAmount) {
+        return Math.round(damageAmount * (1 - ((double) defence / (defence + 50))));
     }
 
     private void setHealthBar() {

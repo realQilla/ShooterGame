@@ -81,14 +81,6 @@ public class WeaponListener implements Listener {
         }
     }
 
-    @EventHandler
-    public void playerDamageWeapon(PlayerItemDamageEvent event) {
-        ItemStack item = event.getItem();
-        if (item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(GunPDC.GUN_TYPE.getKey())) {
-            event.setCancelled(true);
-        }
-    }
-
     //@EventHandler
     public void onPlayerJoin(PlayerJoinEvent event) {
         new GunDisplay(event.getPlayer()).displayLoop();

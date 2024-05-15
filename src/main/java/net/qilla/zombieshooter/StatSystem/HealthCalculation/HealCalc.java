@@ -25,7 +25,7 @@ public final class HealCalc {
     }
 
     public void healMain() {
-        statManager.modifyHealth(healAmount, StatManager.Type.ADD);
+        statManager.addHealth(healAmount);
         setHealthBar();
         new Indicator(sourceReceiver.getLocation(), Indicator.IndicatorType.HEAL, healAmount).mainIndicator();
         new HealthDisplay(sourceReceiver, new HealthDifference(currentHealth, healAmount), HealthDisplay.DisplayType.HEAL).updateHealthDisplay();
@@ -43,7 +43,7 @@ public final class HealCalc {
         CraftPlayer craftPlayer = (CraftPlayer) sourceReceiver;
         ServerPlayer nmsPlayer = craftPlayer.getHandle();
 
-        long flattenedHealth = (long) Math.ceil((double) (currentHealth - healAmount) / maxHealth * 20);
+        long flattenedHealth = (long) Math.ceil((double) (currentHealth + healAmount) / maxHealth * 20);
 
         nmsPlayer.connection.sendPacket(new ClientboundSetHealthPacket(flattenedHealth, sourceReceiver.getFoodLevel(), sourceReceiver.getSaturation()));
     }
