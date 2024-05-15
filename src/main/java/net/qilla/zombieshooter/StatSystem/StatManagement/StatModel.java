@@ -3,12 +3,12 @@ package net.qilla.zombieshooter.StatSystem.StatManagement;
 public class StatModel {
 
     private long maxHealth;
-    private long defence;
+    private long defense;
     private long regeneration;
 
-    public StatModel(long maxHealth, long defence, long regeneration) {
+    public StatModel(long maxHealth, long defense, long regeneration) {
         this.maxHealth = maxHealth;
-        this.defence = defence;
+        this.defense = defense;
         this.regeneration = regeneration;
     }
 
@@ -16,8 +16,8 @@ public class StatModel {
         return maxHealth;
     }
 
-    public long getDefence() {
-        return defence;
+    public long getDefense() {
+        return defense;
     }
 
     public long getRegeneration() {
@@ -25,11 +25,11 @@ public class StatModel {
     }
 
     public void setMaxHealth() {
-        this.maxHealth = defence;
+        this.maxHealth = defense;
     }
 
-    public void setDefence(long playerDefence) {
-        this.defence = playerDefence;
+    public void setDefense(long playerDefense) {
+        this.defense = playerDefense;
     }
 
     public void setRegeneration(long playerRegeneration) {

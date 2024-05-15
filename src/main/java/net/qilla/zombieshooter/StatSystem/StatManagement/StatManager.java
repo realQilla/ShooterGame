@@ -21,7 +21,7 @@ public class StatManager extends StatCore {
     private BukkitTask timedStat;
 
     private final long baseMaxHealth = 10;
-    private final long baseDefence = 0;
+    private final long baseDefense = 0;
     private final long baseRegeneration = 1;
 
     private final Player player;
@@ -33,7 +33,7 @@ public class StatManager extends StatCore {
         this.playerUUID = player.getUniqueId();
         statManager.put(playerUUID, this);
 
-        super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefence(), calcTotalRegeneration()));
+        super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefense(), calcTotalRegeneration()));
         super.setHealth(calcTotalMaxHealth());
         new StatDisplay(player);
         timedStat();
@@ -79,7 +79,7 @@ public class StatManager extends StatCore {
 
     private void safeStatUpdate() {
         if(getHealth() > calcTotalMaxHealth()) setHealth(calcTotalMaxHealth());
-        super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefence(), calcTotalRegeneration()));
+        super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefense(), calcTotalRegeneration()));
     }
 
     private void updateDisplay() {
@@ -94,8 +94,8 @@ public class StatManager extends StatCore {
         return baseMaxHealth + getArmorPDC(ArmorPDC.ITEM_STAT_MAX_HEALTH) + getHeldPDC(ArmorPDC.ITEM_STAT_MAX_HEALTH);
     }
 
-    private long calcTotalDefence() {
-        return baseDefence + getArmorPDC(ArmorPDC.ITEM_STAT_DEFENCE) + getHeldPDC(ArmorPDC.ITEM_STAT_DEFENCE);
+    private long calcTotalDefense() {
+        return baseDefense + getArmorPDC(ArmorPDC.ITEM_STAT_DEFENSE) + getHeldPDC(ArmorPDC.ITEM_STAT_DEFENSE);
     }
 
     private long calcTotalRegeneration() {

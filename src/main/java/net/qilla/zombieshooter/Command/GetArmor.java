@@ -97,7 +97,7 @@ public class GetArmor implements CommandExecutor, TabExecutor {
             meta.lore(loreComponents);
             meta.getPersistentDataContainer().set(ArmorPDC.ARMOR_SET.getKey(), PersistentDataType.STRING, armorBase.getArmorSet().armorSet().toString());
             meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_MAX_HEALTH.getKey(), PersistentDataType.LONG, armorBase.getStatModel().getMaxHealth());
-            meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_DEFENCE.getKey(), PersistentDataType.LONG, armorBase.getStatModel().getDefence());
+            meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_DEFENSE.getKey(), PersistentDataType.LONG, armorBase.getStatModel().getDefense());
             meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_REGENERATION.getKey(), PersistentDataType.LONG, armorBase.getStatModel().getRegeneration());
             meta.setAttributeModifiers(null);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
@@ -112,8 +112,8 @@ public class GetArmor implements CommandExecutor, TabExecutor {
         if(statModel.getMaxHealth() != 0) {
             lore.add("<!italic><red>♥</red> <gray>Health:</gray> <white>+" + statModel.getMaxHealth() + "</white>");
         }
-        if(statModel.getDefence() != 0) {
-            lore.add("<!italic><dark_gray>\uD83D\uDEE1</dark_gray> <gray>Defence:</gray> <white>+" + statModel.getDefence() + "</white>");
+        if(statModel.getDefense() != 0) {
+            lore.add("<!italic><dark_gray>\uD83D\uDEE1</dark_gray> <gray>Defense:</gray> <white>+" + statModel.getDefense() + "</white>");
         }
         if(statModel.getRegeneration() != 0) {
             lore.add("<!italic><light_purple>\uD83E\uDDEA</light_purple> <gray>Regeneration:</gray> <white>+" + statModel.getRegeneration() + "</white>");

@@ -18,7 +18,7 @@ public final class DamageCalc {
     private final Player sourceReceiver;
     private final long damageAmount;
     private final long maxHealth;
-    private final long defence;
+    private final long defense;
     private final long currentHealth;
 
     public DamageCalc(final Player sourceReceiver, final LivingEntity sourceAttacker, long damageAmount) {
@@ -26,9 +26,9 @@ public final class DamageCalc {
         this.sourceAttacker = sourceAttacker;
         this.sourceReceiver = sourceReceiver;
         this.maxHealth = statManager.getStats().getMaxHealth();
-        this.defence = statManager.getStats().getDefence();
+        this.defense = statManager.getStats().getDefense();
         this.currentHealth = statManager.getHealth();
-        this.damageAmount = getNeededDamage(defenceCalc(damageAmount));
+        this.damageAmount = getNeededDamage(defenseCalc(damageAmount));
     }
 
     public void damageMain() {
@@ -47,8 +47,8 @@ public final class DamageCalc {
         }
     }
 
-    private long defenceCalc(long damageAmount) {
-        return Math.round(damageAmount * (1 - ((double) defence / (defence + 50))));
+    private long defenseCalc(long damageAmount) {
+        return Math.round(damageAmount * (1 - ((double) defense / (defense + 50))));
     }
 
     private void setHealthBar() {

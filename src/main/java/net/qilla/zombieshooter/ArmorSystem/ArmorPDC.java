@@ -7,7 +7,7 @@ public enum ArmorPDC {
 
     ARMOR_SET(new NamespacedKey(ZombieShooter.getInstance(), "armor_type")),
 
-    ITEM_STAT_DEFENCE(new NamespacedKey(ZombieShooter.getInstance(), "item_stat_defence")),
+    ITEM_STAT_DEFENSE(new NamespacedKey(ZombieShooter.getInstance(), "item_stat_defense")),
     ITEM_STAT_MAX_HEALTH(new NamespacedKey(ZombieShooter.getInstance(), "item_stat_max_health")),
     ITEM_STAT_REGENERATION(new NamespacedKey(ZombieShooter.getInstance(), "item_stat_regeneration"));
 

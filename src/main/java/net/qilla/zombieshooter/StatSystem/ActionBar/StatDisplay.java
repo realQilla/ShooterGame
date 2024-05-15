@@ -18,7 +18,7 @@ public class StatDisplay {
     private final Player player;
     private long playerHealth;
     private long playerMaxHealth;
-    private long playerDefence;
+    private long playerDefense;
 
 
     public StatDisplay(Player player) {
@@ -34,7 +34,7 @@ public class StatDisplay {
             @Override
             public void run() {
                 updateStats();
-                player.sendActionBar(MiniMessage.miniMessage().deserialize("<red>♥ " + playerHealth + "/" + playerMaxHealth + "</red>   <gray>" + playerDefence + " \uD83D\uDEE1</gray>"));
+                player.sendActionBar(MiniMessage.miniMessage().deserialize("<red>♥ " + playerHealth + "/" + playerMaxHealth + "</red>   <gray>" + playerDefense + " \uD83D\uDEE1</gray>"));
             }
         }.runTaskTimer(ZombieShooter.getInstance(), 0, 20);
     }
@@ -50,7 +50,7 @@ public class StatDisplay {
     private void updateStats() {
         this.playerHealth = statManager.getHealth();
         this.playerMaxHealth = statManager.getStats().getMaxHealth();
-        this.playerDefence = statManager.getStats().getDefence();
+        this.playerDefense = statManager.getStats().getDefense();
     }
 
     public static StatDisplay getStatDisplay(UUID playerUUID) {
