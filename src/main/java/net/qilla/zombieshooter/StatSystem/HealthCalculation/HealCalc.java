@@ -4,6 +4,8 @@ import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.qilla.zombieshooter.StatSystem.DamageIndicator.Indicator;
 import net.qilla.zombieshooter.StatSystem.StatManagement.StatManager;
+import net.qilla.zombieshooter.StatSystem.StatUtil.Formula;
+import net.qilla.zombieshooter.StatSystem.StatUtil.UpdatePlayer;
 import net.qilla.zombieshooter.StatSystem.TagDisplay.HealthDisplay;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -26,7 +28,6 @@ public final class HealCalc {
 
     public void healMain() {
         statManager.addHealth(healAmount);
-        setHealthBar();
         new Indicator(sourceReceiver.getLocation(), Indicator.IndicatorType.HEAL, healAmount).mainIndicator();
         new HealthDisplay(sourceReceiver, new HealthDifference(currentHealth, healAmount), HealthDisplay.DisplayType.HEAL).updateHealthDisplay();
     }
@@ -37,14 +38,5 @@ public final class HealCalc {
         } else {
             return healAmount;
         }
-    }
-
-    private void setHealthBar() {
-        CraftPlayer craftPlayer = (CraftPlayer) sourceReceiver;
-        ServerPlayer nmsPlayer = craftPlayer.getHandle();
-
-        long flattenedHealth = (long) Math.ceil((double) (currentHealth + healAmount) / maxHealth * 20);
-
-        nmsPlayer.connection.sendPacket(new ClientboundSetHealthPacket(flattenedHealth, sourceReceiver.getFoodLevel(), sourceReceiver.getSaturation()));
     }
 }

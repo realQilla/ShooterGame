@@ -1,5 +1,6 @@
 package net.qilla.zombieshooter;
 
+import net.qilla.zombieshooter.BlockSystem.ChunkCaching;
 import net.qilla.zombieshooter.Command.GetArmor;
 import net.qilla.zombieshooter.Command.GetGun;
 import net.qilla.zombieshooter.CorpseSystem.CorpseListener;
@@ -23,6 +24,7 @@ public final class ZombieShooter extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new MechanicListener(), this);
         getServer().getPluginManager().registerEvents(new CorpseListener(), this);
         getServer().getPluginManager().registerEvents(new StatListener(), this);
+        getServer().getPluginManager().registerEvents(new ChunkCaching(), this);
         getCommand("GetGun").setExecutor(new GetGun());
         getCommand("GetArmor").setExecutor(new GetArmor());
         for(Player player : Bukkit.getOnlinePlayers()) {
@@ -33,10 +35,11 @@ public final class ZombieShooter extends JavaPlugin {
 
     @Override
     public void onDisable() {
-
+        //Disable logic
     }
 
     public static ZombieShooter getInstance() {
         return getPlugin(ZombieShooter.class);
     }
 }
+

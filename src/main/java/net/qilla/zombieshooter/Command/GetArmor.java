@@ -33,54 +33,22 @@ public class GetArmor implements CommandExecutor, TabExecutor {
         }
 
         ArmorID.ArmorSet armorSet;
-        ArmorID.ArmorType armorType;
 
-        switch (args.length) {
-            case 1 -> {
-                try {
-                    armorSet = ArmorID.ArmorSet.valueOf(args[0].toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    armorSet = null;
-                }
-                armorType = null;
-            }
-            case 2 -> {
-                try {
-                    armorSet = ArmorID.ArmorSet.valueOf(args[0].toUpperCase());
-                    armorType = ArmorID.ArmorType.valueOf(args[1].toUpperCase());
-                } catch (IllegalArgumentException e) {
-                    player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid arguments, specify a set and armor type</red>"));
-                    return true;
-                }
-            }
-            default -> {
-                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid arguments, specify a set and armor type</red>"));
-                return true;
-            }
-        }
-
-        if (!ArmorRegistry.getInstance().getArmorRegistry().containsKey(new ArmorID(new ArmorID.ArmorPiece(armorSet, armorType))) && armorType != null) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Selected armor does not exist.</red>"));
+        try {
+            armorSet = ArmorID.ArmorSet.valueOf(args[0].toUpperCase());
+        } catch (IllegalArgumentException e) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>That armor set does not exist.</red>"));
             return true;
         }
 
-        if(armorType == null) {
-            for (ArmorID.ArmorType eachType : ArmorID.ArmorType.values()) {
-                ArmorBase eachPiece = ArmorRegistry.getInstance().getArmorRegistry().get(new ArmorID(new ArmorID.ArmorPiece(armorSet, eachType)));
-                if (eachPiece != null) {
-                    ItemStack item = getItemStack(eachPiece);
-                    new ItemManagement().giveItem(player, item);
-                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
-                }
+        for (ArmorID.ArmorType eachType : ArmorID.ArmorType.values()) {
+            ArmorBase eachPiece = ArmorRegistry.getInstance().getArmorRegistry().get(new ArmorID(new ArmorID.ArmorPiece(armorSet, eachType)));
+            if (eachPiece != null) {
+                ItemStack item = getItemStack(eachPiece);
+                new ItemManagement().giveItem(player, item);
+                player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
             }
-            return true;
         }
-
-        ArmorBase armorBase = ArmorRegistry.getInstance().getArmorRegistry().get(new ArmorID(new ArmorID.ArmorPiece(armorSet, armorType)));
-
-        ItemStack item = getItemStack(armorBase);
-        player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
-        new ItemManagement().giveItem(player, item);
         return true;
     }
 
@@ -128,15 +96,12 @@ public class GetArmor implements CommandExecutor, TabExecutor {
 
         for (Map.Entry<ArmorID, ArmorBase> entry : ArmorRegistry.getInstance().getArmorRegistry().entrySet()) {
             String armorSet = entry.getKey().armorPiece().armorSet().toString().toLowerCase();
-            String armorType = entry.getKey().armorPiece().armorType().toString().toLowerCase();
 
-            armorSets.computeIfAbsent(armorSet, k -> new ArrayList<>()).add(armorType);
+            armorSets.computeIfAbsent(armorSet, k -> new ArrayList<>()).add(armorSet);
         }
 
         if (args.length == 1) {
             return new ArrayList<>(armorSets.keySet());
-        } else if (args.length == 2 && armorSets.containsKey(args[0])) {
-            return armorSets.get(args[0]);
         }
         return List.of();
     }

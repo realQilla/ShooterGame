@@ -19,6 +19,7 @@ repositories {
 dependencies {
     paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.17.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 }
 
 tasks.register<Jar>("exportJar") {

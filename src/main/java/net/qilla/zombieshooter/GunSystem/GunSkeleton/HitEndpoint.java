@@ -4,6 +4,8 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
+import net.qilla.zombieshooter.StatSystem.StatManagement.StatManager;
+import net.qilla.zombieshooter.StatSystem.StatUtil.Formula;
 import net.qilla.zombieshooter.Utils.SoundModel;
 import net.qilla.zombieshooter.ZombieShooter;
 import org.bukkit.Bukkit;
@@ -57,17 +59,15 @@ public class HitEndpoint {
         entity.damage(damage, player);
         entity.setNoDamageTicks(1);
         entity.setKiller(player);
-        CraftEntity temp = (CraftEntity) entity;
         if(entity instanceof Player hitPlayer) {
-            damageArmor(hitPlayer);
+            //damageArmor(hitPlayer);
         }
     }
 
     private double calculateDamage(LivingEntity entity, GunBase gunType, ItemStack gun) {
         int fireMod = gun.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
-        double damage = gunType.getFireMod()[fireMod].bulletDamage();
-        double armor = entity.getAttribute(Attribute.GENERIC_ARMOR).getValue();
-        return damage * (1 - Math.min(20, Math.max(armor / 5, armor - damage / 2)) / 25);
+        long damage = Math.round(gunType.getFireMod()[fireMod].bulletDamage());
+        return Formula.defenseCalc(damage, StatManager.getStatManager(entity.getUniqueId()).getStats().getDefense());
     }
 
     private void damageArmor(Player hitPlayer) {

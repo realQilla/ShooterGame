@@ -2,9 +2,10 @@ package net.qilla.zombieshooter.CorpseSystem;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 
 public class CorpseListener implements Listener {
 
@@ -15,8 +16,8 @@ public class CorpseListener implements Listener {
      * @throws IOException
      */
 
-    //@EventHandler
-    public void onEntityDeath(EntityDeathEvent event) throws IOException {
-        new CorpseDisplay().body(event);
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) throws NoSuchFieldException, InvocationTargetException, InstantiationException, IllegalAccessException, NoSuchMethodException {
+        new CorpseDisplay().body(event.getPlayer());
     }
 }

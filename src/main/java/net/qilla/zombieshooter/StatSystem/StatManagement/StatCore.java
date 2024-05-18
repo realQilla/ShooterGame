@@ -1,5 +1,7 @@
 package net.qilla.zombieshooter.StatSystem.StatManagement;
 
+import net.qilla.zombieshooter.StatSystem.BaseValues;
+
 import java.util.HashMap;
 import java.util.UUID;
 
@@ -12,6 +14,8 @@ public abstract class StatCore {
 
     protected StatCore(UUID playerUUID) {
         this.playerUUID = playerUUID;
+        playerStatMap.put(playerUUID, new StatModel(BaseValues.BASE_HEALTH.getValue(), BaseValues.BASE_DEFENSE.getValue(), BaseValues.BASE_REGENERATION.getValue()));
+        playerHealthMap.put(playerUUID, BaseValues.BASE_HEALTH.getValue());
     }
 
     /**
