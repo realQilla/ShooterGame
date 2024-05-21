@@ -1,13 +1,9 @@
 package net.qilla.zombieshooter.StatSystem;
 
 import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
-import com.mojang.datafixers.types.Type;
-import net.minecraft.network.protocol.game.ClientboundGameEventPacket;
-import net.minecraft.server.level.ServerPlayer;
 import net.qilla.zombieshooter.StatSystem.HealthCalculation.DamageCalc;
 import net.qilla.zombieshooter.StatSystem.StatManagement.StatManager;
 import net.qilla.zombieshooter.StatSystem.TagDisplay.HealthDisplay;
-import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +11,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityRegainHealthEvent;
 import org.bukkit.event.entity.EntitySpawnEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerItemDamageEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -25,6 +20,9 @@ public final class StatListener implements Listener {
 
     @EventHandler
     private void onDamage(final EntityDamageEvent event) {
+        long damage = Math.round(event.getDamage());
+        event.setDamage(0);
+
         LivingEntity attacker;
         if(event.getDamageSource().getCausingEntity() == null || !(event.getDamageSource().getCausingEntity() instanceof LivingEntity livingEntity)) {
             attacker = null;
@@ -32,8 +30,7 @@ public final class StatListener implements Listener {
             attacker = livingEntity;
         }
         if(event.getEntity() instanceof Player player) {
-            new DamageCalc(player, attacker, Math.round(event.getDamage())).damageMain();
-            event.setDamage(0);
+            new DamageCalc(player, attacker, damage).damageMain();
         }
     }
 
@@ -46,20 +43,6 @@ public final class StatListener implements Listener {
     private void onSpawn(final EntitySpawnEvent event) {
         if (event.getEntity() instanceof LivingEntity livingEntity)
             new HealthDisplay(livingEntity).initialDisplaySetup();
-    }
-
-    @EventHandler
-    private void onPlayerJoin(final PlayerJoinEvent event) {
-        Player player = event.getPlayer();
-
-        new StatManager(player);
-    }
-
-    @EventHandler
-    private void onPlayerQuit(final PlayerQuitEvent event) {
-        Player player = event.getPlayer();
-
-        StatManager.getStatManager(player.getUniqueId()).clear();
     }
 
     @EventHandler

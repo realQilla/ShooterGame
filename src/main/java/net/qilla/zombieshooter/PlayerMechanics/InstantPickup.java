@@ -11,7 +11,7 @@ public class InstantPickup {
 
         if(player == null) return;
 
-        new ItemManagement().giveItem(player, event.getDrops().stream().toList());
+        ItemManagement.giveItem(player, event.getDrops().stream().toList());
         event.getDrops().clear();
         event.setDroppedExp(0);
     }

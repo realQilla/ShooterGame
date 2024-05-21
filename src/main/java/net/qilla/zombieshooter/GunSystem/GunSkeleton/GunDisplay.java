@@ -63,7 +63,7 @@ public class GunDisplay {
     public void updateGunFields(ItemStack item, boolean forceUpdate) {
         if(CheckValid.isValidBoth(item)) {
             PersistentDataContainer dataContainer = item.getItemMeta().getPersistentDataContainer();
-            gunType = GunRegistry.getInstance().getGun(GetFromGun.typeID(dataContainer));
+            gunType = GunRegistry.getGun(GetFromGun.typeID(dataContainer));
             currentMagazine = dataContainer.get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
             currentCapacity = dataContainer.get(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
             currentMode = dataContainer.get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);

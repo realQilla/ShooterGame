@@ -80,14 +80,4 @@ public class WeaponListener implements Listener {
             }
         }
     }
-
-    //@EventHandler
-    public void onPlayerJoin(PlayerJoinEvent event) {
-        new GunDisplay(event.getPlayer()).displayLoop();
-    }
-
-    //@EventHandler
-    public void onPlayerQuit(PlayerQuitEvent event) {
-        GunDisplay.getDisplayMap(event.getPlayer()).remove();
-    }
 }

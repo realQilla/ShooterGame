@@ -6,6 +6,7 @@ import net.qilla.zombieshooter.ArmorSystem.ArmorID;
 import net.qilla.zombieshooter.ArmorSystem.ArmorRegistry;
 import net.qilla.zombieshooter.ArmorSystem.ArmorType.ArmorBase;
 import net.qilla.zombieshooter.ArmorSystem.ArmorPDC;
+import net.qilla.zombieshooter.Permission.PermissionCommand;
 import net.qilla.zombieshooter.StatSystem.StatManagement.StatModel;
 import net.qilla.zombieshooter.Utils.ItemManagement;
 import org.bukkit.Sound;
@@ -28,7 +29,12 @@ public class GetArmor implements CommandExecutor, TabExecutor {
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if (!(sender instanceof Player player)) {
-            sender.sendMessage("This command can only be executed by a player");
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>This command can only be executed by a player.</red>"));
+            return true;
+        }
+
+        if(!player.hasPermission(PermissionCommand.getBlock)) {
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to execute this command.</red>"));
             return true;
         }
 
@@ -42,10 +48,10 @@ public class GetArmor implements CommandExecutor, TabExecutor {
         }
 
         for (ArmorID.ArmorType eachType : ArmorID.ArmorType.values()) {
-            ArmorBase eachPiece = ArmorRegistry.getInstance().getArmorRegistry().get(new ArmorID(new ArmorID.ArmorPiece(armorSet, eachType)));
+            ArmorBase eachPiece = ArmorRegistry.getArmorRegistry().get(new ArmorID(new ArmorID.ArmorPiece(armorSet, eachType)));
             if (eachPiece != null) {
                 ItemStack item = getItemStack(eachPiece);
-                new ItemManagement().giveItem(player, item);
+                ItemManagement.giveItem(player, item);
                 player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
             }
         }
@@ -92,9 +98,11 @@ public class GetArmor implements CommandExecutor, TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Map<String, List<String>> armorSets = new HashMap<>();
 
-        for (Map.Entry<ArmorID, ArmorBase> entry : ArmorRegistry.getInstance().getArmorRegistry().entrySet()) {
+        if(!sender.hasPermission(PermissionCommand.getBlock)) return List.of();
+
+        Map<String, List<String>> armorSets = new HashMap<>();
+        for (Map.Entry<ArmorID, ArmorBase> entry : ArmorRegistry.getArmorRegistry().entrySet()) {
             String armorSet = entry.getKey().armorPiece().armorSet().toString().toLowerCase();
 
             armorSets.computeIfAbsent(armorSet, k -> new ArrayList<>()).add(armorSet);

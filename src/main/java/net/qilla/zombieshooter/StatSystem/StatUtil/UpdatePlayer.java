@@ -9,6 +9,14 @@ import org.bukkit.entity.Player;
 
 public class UpdatePlayer {
 
+    /**
+     * Sets the health of the player(client side)
+     *
+     * @param player The player whose health to modify.
+     * @param health The total health after being changed.
+     * @param maxHealth The players overall max health.
+     */
+
     public static void healthBarDisplay(Player player, long health, long maxHealth) {
         CraftPlayer craftPlayer = (CraftPlayer) player;
         ServerPlayer nmsPlayer = craftPlayer.getHandle();

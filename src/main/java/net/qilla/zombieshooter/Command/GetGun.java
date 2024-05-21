@@ -5,6 +5,7 @@ import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunRegistry;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunType.GunBase;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunPDC;
+import net.qilla.zombieshooter.Permission.PermissionCommand;
 import net.qilla.zombieshooter.Utils.ItemManagement;
 import net.qilla.zombieshooter.GunSystem.GunCreation.Mod.GunID;
 import org.bukkit.Sound;
@@ -26,8 +27,13 @@ public class GetGun implements CommandExecutor, TabExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
-        if(!(sender instanceof Player player))  {
-            sender.sendMessage("This command can only be executed by a player");
+        if (!(sender instanceof Player player)) {
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>This command can only be executed by a player.</red>"));
+            return true;
+        }
+
+        if(!player.hasPermission(PermissionCommand.getBlock)) {
+            sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to execute this command.</red>"));
             return true;
         }
 
@@ -39,16 +45,16 @@ public class GetGun implements CommandExecutor, TabExecutor {
         String gunName = args[0];
         String gunTier = args[1];
 
-        if(!GunRegistry.getInstance().getGunRegistry().containsKey(new GunID(gunName, gunTier))) {
+        if(!GunRegistry.getGunRegistry().containsKey(new GunID(gunName, gunTier))) {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Selected gun does not exist.</red>"));
             return true;
         }
 
-        GunBase gunType = GunRegistry.getInstance().getGunRegistry().get(new GunID(gunName, gunTier));
+        GunBase gunType = GunRegistry.getGunRegistry().get(new GunID(gunName, gunTier));
 
         ItemStack item = getItemStack(gunType);
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
-        new ItemManagement().giveItem(player, item);
+        ItemManagement.giveItem(player, item);
         return true;
     }
 
@@ -77,9 +83,11 @@ public class GetGun implements CommandExecutor, TabExecutor {
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
-        Map<String, List<String>> gunTypesAndTiers = new HashMap<>();
 
-        for (Map.Entry<GunID, GunBase> entry : GunRegistry.getInstance().getGunRegistry().entrySet()) {
+        if(!sender.hasPermission(PermissionCommand.getBlock)) return List.of();
+
+        Map<String, List<String>> gunTypesAndTiers = new HashMap<>();
+        for (Map.Entry<GunID, GunBase> entry : GunRegistry.getGunRegistry().entrySet()) {
             String gunType = entry.getKey().gunType();
             String gunTier = entry.getKey().tier();
 

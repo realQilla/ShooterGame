@@ -10,9 +10,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public class ItemManagement {
+public final class ItemManagement {
 
-    public void giveItem(@NotNull Player player, List<ItemStack> itemList) {
+    public static void giveItem(@NotNull Player player, List<ItemStack> itemList) {
         for (ItemStack item : itemList) {
             if (player.getInventory().firstEmpty() == -1) {
                 player.getLocation().getWorld().dropItemNaturally(player.getLocation(), item);
@@ -22,7 +22,7 @@ public class ItemManagement {
         }
     }
 
-    public void giveItem(@NotNull Player player, ItemStack item) {
+    public static void giveItem(@NotNull Player player, ItemStack item) {
         if (player.getInventory().firstEmpty() == -1) {
             player.getLocation().getWorld().dropItemNaturally(player.getLocation(), item);
         } else {
@@ -30,7 +30,7 @@ public class ItemManagement {
         }
     }
 
-    public boolean subtractKey(@NotNull Player player, @NotNull ItemStack item, @NotNull NamespacedKey dataKey) {
+    public static boolean subtractKey(@NotNull Player player, @NotNull ItemStack item, @NotNull NamespacedKey dataKey) {
         if(!item.hasItemMeta()) return false;
         if(!item.getItemMeta().getPersistentDataContainer().has(dataKey)) return false;
 
@@ -43,7 +43,7 @@ public class ItemManagement {
         return true;
     }
 
-    public boolean updateKey(@NotNull Player player, @NotNull ItemStack item, @NotNull NamespacedKey dataKey, int newValue) {
+    public static boolean updateKey(@NotNull Player player, @NotNull ItemStack item, @NotNull NamespacedKey dataKey, int newValue) {
         if(!item.hasItemMeta()) return false;
         if(!item.getItemMeta().getPersistentDataContainer().has(dataKey)) return false;
 

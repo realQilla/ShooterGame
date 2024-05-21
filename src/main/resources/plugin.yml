@@ -13,3 +13,7 @@ commands:
     description: Get a specific armor type
     usage: /getarmor
     aliases: [ga]
+  GetBlock:
+    description: Get a specific custom block
+    usage: /getblock
+    aliases: [gb]

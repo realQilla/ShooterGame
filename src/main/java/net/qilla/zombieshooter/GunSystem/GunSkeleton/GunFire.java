@@ -27,7 +27,7 @@ public class GunFire extends GunCore {
 
     public void fireMain(Player player, ItemStack gunItem) {
         PersistentDataContainer dataContainer = gunItem.getItemMeta().getPersistentDataContainer();
-        GunBase gunType = GunRegistry.getInstance().getGun(GetFromGun.typeID(dataContainer));
+        GunBase gunType = GunRegistry.getGun(GetFromGun.typeID(dataContainer));
         String gunUniqueID = dataContainer.get(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING);
 
         int fireMode = gunItem.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);

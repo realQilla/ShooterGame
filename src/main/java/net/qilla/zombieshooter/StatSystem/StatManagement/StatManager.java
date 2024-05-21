@@ -45,19 +45,20 @@ public class StatManager extends StatCore {
     public void addHealth(long amount) {
         super.setHealth(super.getHealth() + amount);
         UpdatePlayer.healthBarDisplay(player, (super.getHealth() + amount), super.getStats().getMaxHealth());
-        updateDisplay();
+        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
     }
 
     public void removeHealth(long amount) {
-        super.setHealth(super.getHealth() - amount);
-        UpdatePlayer.healthBarDisplay(player, (super.getHealth() + amount), super.getStats().getMaxHealth());
-        updateDisplay();
+        long finalHealth = super.getHealth() - amount;
+        super.setHealth(finalHealth);
+        UpdatePlayer.healthBarDisplay(player, (finalHealth), super.getStats().getMaxHealth());
+        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
     }
 
     public void resetHealth() {
         super.setHealth(BaseValues.BASE_HEALTH.getValue());
         UpdatePlayer.healthBarDisplay(player, BaseValues.BASE_HEALTH.getValue(), super.getStats().getMaxHealth());
-        updateDisplay();
+        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
     }
 
     public void clear() {
@@ -78,17 +79,13 @@ public class StatManager extends StatCore {
 
     public void updateArmor() {
         safeStatUpdate();
-        updateDisplay();
+        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
     }
 
     private void safeStatUpdate() {
         if (getHealth() > calcTotalMaxHealth()) setHealth(calcTotalMaxHealth());
         super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefense(), calcTotalRegeneration()));
         UpdatePlayer.healthBarDisplay(player, (super.getHealth()), super.getStats().getMaxHealth());
-    }
-
-    private void updateDisplay() {
-        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
     }
 
     /**

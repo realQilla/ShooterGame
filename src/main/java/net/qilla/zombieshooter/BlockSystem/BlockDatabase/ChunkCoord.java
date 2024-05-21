@@ -1,4 +1,4 @@
-package net.qilla.zombieshooter.BlockSystem;
+package net.qilla.zombieshooter.BlockSystem.BlockDatabase;
 
 public record ChunkCoord(int x, int z) {
 

@@ -37,8 +37,6 @@ public final class DamageCalc {
 
     public void damageMain() {
         statManager.removeHealth(damageAmount);
-        new Indicator(sourceReceiver.getLocation(), Indicator.IndicatorType.DAMAGE, damageAmount).mainIndicator();
-        new HealthDisplay(sourceReceiver, new HealthDifference(currentHealth, damageAmount), HealthDisplay.DisplayType.DAMAGE).updateHealthDisplay();
     }
 
     private long getNeededDamage(long damageAmount) {

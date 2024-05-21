@@ -16,7 +16,7 @@ public class GunChangeMode extends GunCore {
 
     public void modeMain(@NotNull Player player, @NotNull ItemStack gunItem) {
         PersistentDataContainer dataContainer = gunItem.getItemMeta().getPersistentDataContainer();
-        GunBase gunType = GunRegistry.getInstance().getGun(GetFromGun.typeID(dataContainer));
+        GunBase gunType = GunRegistry.getGun(GetFromGun.typeID(dataContainer));
         SoundModel changeMode = gunType.getCosmeticMod().changeFireMode();
 
         if(GunCooldown.getInstance().genericCooldown(player, GunCooldown.ActionCooldown.MODE_CHANGE, true)) return;

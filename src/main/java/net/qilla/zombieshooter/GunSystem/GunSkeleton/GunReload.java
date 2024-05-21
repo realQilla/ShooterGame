@@ -25,7 +25,7 @@ public class GunReload extends GunCore {
     public void reloadMain(@NotNull Player player) {
         ItemStack gunItem = player.getInventory().getItemInMainHand();
         PersistentDataContainer dataContainer = gunItem.getItemMeta().getPersistentDataContainer();
-        GunBase gunType = GunRegistry.getInstance().getGun(GetFromGun.typeID(dataContainer));
+        GunBase gunType = GunRegistry.getGun(GetFromGun.typeID(dataContainer));
         String uniqueID = dataContainer.get(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING);
 
         if(canReload(player, dataContainer)) return;
