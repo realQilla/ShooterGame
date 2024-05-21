@@ -1,5 +1,6 @@
 package net.qilla.zombieshooter.BlockSystem.BlockDatabase;
 
+import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.zombieshooter.ZombieShooter;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
@@ -37,10 +38,10 @@ public class BlockDBListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onBlockPlace(final BlockPlaceEvent event) {
         Player player = event.getPlayer();
-        if(!player.getInventory().getItemInMainHand().hasItemMeta()) return;
+        if (!player.getInventory().getItemInMainHand().hasItemMeta()) return;
         PersistentDataContainer pdc = player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer();
-        if(!pdc.has(new NamespacedKey(ZombieShooter.getInstance(), "permanent_block"))) return;
-        final boolean isPermanent  = Boolean.TRUE.equals(pdc.get(new NamespacedKey(ZombieShooter.getInstance(), "permanent_block"), PersistentDataType.BOOLEAN));
+        if (!pdc.has(new NamespacedKey(ZombieShooter.getInstance(), "permanent_block"))) return;
+        final boolean isPermanent = Boolean.TRUE.equals(pdc.get(new NamespacedKey(ZombieShooter.getInstance(), "permanent_block"), PersistentDataType.BOOLEAN));
         final short blockID = pdc.get(new NamespacedKey(ZombieShooter.getInstance(), "block_id"), PersistentDataType.SHORT);
         blockMapper.addBlock(event.getBlock().getLocation(), blockID, isPermanent);
     }
@@ -50,11 +51,14 @@ public class BlockDBListener implements Listener {
         Player player = event.getPlayer();
         Location location = event.getBlock().getLocation();
         MineableData mineableData = blockMapper.getMineableData(location);
-        if(mineableData == null) {
-            return;
-        }
-        if(player.getGameMode() == GameMode.CREATIVE) event.setCancelled(true);
-        if (mineableData.isPermanent()) if (!player.isOp() || player.getGameMode() != GameMode.CREATIVE || !player.isSneaking()) {
+        if (mineableData == null) return;
+        if (mineableData.isPermanent()) {
+            if (!player.isOp() || player.getGameMode() != GameMode.CREATIVE || !player.isSneaking()) {
+                event.setCancelled(true);
+            } else {
+                player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You removed a block labeled as permanent.</red>"));
+                blockMapper.removeBlock(location);
+            }
             return;
         }
         blockMapper.removeBlock(location);

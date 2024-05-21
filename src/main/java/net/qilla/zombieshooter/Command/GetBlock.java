@@ -44,7 +44,7 @@ public class GetBlock implements CommandExecutor, TabExecutor {
             customBlock = CustomBlock.valueOf(args[0].toUpperCase());
             isPermanent = Boolean.parseBoolean(args[1]);
             amount = Integer.parseInt(args[2]);
-        } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException | ArrayIndexOutOfBoundsException e) {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You specified an invalid input. Make sure to specify the block, type, and optionally, an amount.</red>"));
             return true;
         }
@@ -64,7 +64,8 @@ public class GetBlock implements CommandExecutor, TabExecutor {
     private @NotNull ItemStack getItemStack(CustomBlock customBlock, int amount, boolean isPermanent) {
         ItemStack item = new ItemStack(customBlock.material());
         item.editMeta(meta -> {
-            meta.displayName(MiniMessage.miniMessage().deserialize("<!italic><green>Custom Block " + customBlock.name() + " </green>"));
+            meta.displayName(MiniMessage.miniMessage().deserialize("<!italic><green>" + customBlock.name() + " </green>"));
+            meta.lore(List.of(MiniMessage.miniMessage().deserialize("<!italic><gray>Permanent: " + isPermanent + "</gray>")));
             meta.getPersistentDataContainer().set(new NamespacedKey(ZombieShooter.getInstance(), "permanent_block"), PersistentDataType.BOOLEAN, isPermanent);
             meta.getPersistentDataContainer().set(new NamespacedKey(ZombieShooter.getInstance(), "block_id"), PersistentDataType.SHORT, customBlock.id());
         });

@@ -1,8 +1,9 @@
 package net.qilla.zombieshooter.BlockSystem.CustomBlock.MiningSystems;
 
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.qilla.zombieshooter.BlockSystem.CustomBlock.CustomBlock;
-import net.qilla.zombieshooter.BlockSystem.CustomBlock.CustomBlockRegistry;
+import net.qilla.zombieshooter.BlockSystem.BlockDatabase.BlockMapper;
+import net.qilla.zombieshooter.BlockSystem.BlockDatabase.MineableData;
+import net.qilla.zombieshooter.BlockSystem.CustomBlock.BlockKey;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
@@ -17,15 +18,16 @@ public class MiningCore {
                 packet.getPos().getZ());
         Block block = blockLoc.getBlock();
 
-        if (block.hasMetadata("locked_block")) return;
-        CustomBlock customBlock = CustomBlockRegistry.getFromRegistryLoc(blockLoc);
-        if(customBlock == null) return;
+        if (block.hasMetadata(BlockKey.lockedBlock.getKey())) return;
+        MineableData mineableData = BlockMapper.getInstance().getMineableData(blockLoc);
+        if(mineableData == null) return;
+        if(player.getGameMode() == GameMode.CREATIVE) return;
         MiningCustom.MiningInstance miningInstance = new MiningCustom.MiningInstance(player.getUniqueId(), block.hashCode());
 
         switch (packet.getAction()) {
             case ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK: {
-                if (MiningCustom.lookup(miningInstance)) MiningCustom.getMiningInstance(player, miningInstance).start(block, customBlock);
-                 else new MiningCustom(player, miningInstance).start(block, customBlock);
+                if (MiningCustom.lookup(miningInstance)) MiningCustom.getMiningInstance(player, miningInstance).startMining(block, mineableData);
+                 else new MiningCustom(player, miningInstance).startMining(block, mineableData);
                 break;
             }
 

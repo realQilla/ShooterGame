@@ -51,7 +51,7 @@ public enum CustomBlock {
             0),
     COBBLESTONE_NODE(6, Material.COBBLESTONE,
             new NodeBlock(Material.BEDROCK,
-                    10, 1),
+                    10, 3),
             List.of(new ItemDrops(Material.COBBLESTONE,
                     1, 1, 1)),
             Sound.BLOCK_STONE_BREAK,
@@ -125,11 +125,11 @@ public enum CustomBlock {
     }
 
     @Nullable
-    public record NodeBlock(Material fillMaterial, int respawnTime, int count) {
+    public record NodeBlock(Material fillMaterial, int respawnTime, int withinNode) {
 
         public NodeBlock {
             if (respawnTime < 0) throw new IllegalArgumentException("Respawn time cannot be less than 0");
-            if (count < 0) throw new IllegalArgumentException("Count cannot be less than 0");
+            if (withinNode < 0) throw new IllegalArgumentException("Count cannot be less than 0");
         }
     }
 }
