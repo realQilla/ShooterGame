@@ -2,7 +2,7 @@ package net.qilla.zombieshooter;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.zombieshooter.ArmorSystem.ArmorRegistry;
-import net.qilla.zombieshooter.BlockSystem.BlockDatabase.NodeMapping;
+import net.qilla.zombieshooter.BlockSystem.BlockDatabase.BlockMapper;
 import net.qilla.zombieshooter.BlockSystem.BlockDatabase.BlockDBListener;
 import net.qilla.zombieshooter.BlockSystem.CustomBlock.CustomBlockRegistry;
 import net.qilla.zombieshooter.PacketListener.PacketGeneric;
@@ -28,7 +28,7 @@ public class PluginManagement implements Listener {
 
     private static final PluginManagement instance = new PluginManagement();
     private final ZombieShooter plugin = ZombieShooter.getInstance();
-    private final NodeMapping nodeMapping = NodeMapping.getInstance();
+    private final BlockMapper blockMapper = BlockMapper.getInstance();
     private final PacketGeneric breakPacketListener = new PacketGeneric();;
 
     protected void onEnable() {
@@ -49,7 +49,7 @@ public class PluginManagement implements Listener {
     }
 
     protected void onDisable() {
-        Bukkit.getWorlds().forEach(NodeMapping.getInstance()::sendWorldToDB);
+        Bukkit.getWorlds().forEach(BlockMapper.getInstance()::sendWorldToDB);
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.kick(MiniMessage.miniMessage().deserialize("<red>Server is reloading</red>"));
         });

@@ -1,10 +1,10 @@
 package net.qilla.zombieshooter.PacketListener;
 
-import io.netty.channel.Channel;
-import io.netty.channel.ChannelDuplexHandler;
-import io.netty.channel.ChannelHandlerContext;
-import io.netty.channel.ChannelPipeline;
+import io.netty.channel.*;
+import net.minecraft.network.protocol.game.ClientboundSelectAdvancementsTabPacket;
+import net.minecraft.network.protocol.game.ClientboundUpdateAdvancementsPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.minecraft.network.protocol.game.ServerboundSeenAdvancementsPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.qilla.zombieshooter.BlockSystem.CustomBlock.MiningSystems.MiningCore;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -19,7 +19,7 @@ public class PacketGeneric {
     private final Set<UUID> playersListened = new HashSet<>();
 
     public void addListener(Player player) {
-        ChannelDuplexHandler cdh = new ChannelDuplexHandler() {
+        ChannelDuplexHandler handler = new ChannelDuplexHandler() {
             @Override
             public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
                 if (packet instanceof ServerboundPlayerActionPacket breakPacket) MiningCore.sentListener(breakPacket, player);
@@ -29,7 +29,7 @@ public class PacketGeneric {
 
         ServerGamePacketListenerImpl playerCon = ((CraftPlayer) player).getHandle().connection;
         ChannelPipeline pipeline = playerCon.connection.channel.pipeline();
-        pipeline.addBefore("packet_handler", player.getName(), cdh);
+        pipeline.addBefore("packet_handler", player.getName(), handler);
         playersListened.add(player.getUniqueId());
     }
 

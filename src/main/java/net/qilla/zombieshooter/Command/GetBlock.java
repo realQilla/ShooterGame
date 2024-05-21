@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GetBlock implements CommandExecutor, TabExecutor {
 
@@ -29,35 +31,41 @@ public class GetBlock implements CommandExecutor, TabExecutor {
             return true;
         }
 
-        if(!player.hasPermission(PermissionCommand.getBlock)) {
+        if (!player.hasPermission(PermissionCommand.getBlock)) {
             sender.sendMessage(MiniMessage.miniMessage().deserialize("<red>You do not have permission to execute this command.</red>"));
             return true;
         }
 
         CustomBlock customBlock;
+        boolean isPermanent = false;
         int amount = 1;
 
         try {
             customBlock = CustomBlock.valueOf(args[0].toUpperCase());
-            if (args.length == 2) {
-                amount = Integer.parseInt(args[1]);
-            }
+            isPermanent = Boolean.parseBoolean(args[1]);
+            amount = Integer.parseInt(args[2]);
         } catch (IllegalArgumentException e) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You specified an invalid input.</red>"));
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You specified an invalid input. Make sure to specify the block, type, and optionally, an amount.</red>"));
             return true;
         }
 
-        ItemStack item = getItemStack(customBlock, amount);
+        if (amount < 1) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You specified an invalid amount of items.</red>"));
+            return true;
+        }
+
+        ItemStack item = getItemStack(customBlock, amount, isPermanent);
         ItemManagement.giveItem(player, item);
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
 
         return true;
     }
 
-    private static @NotNull ItemStack getItemStack(CustomBlock customBlock, int amount) {
+    private @NotNull ItemStack getItemStack(CustomBlock customBlock, int amount, boolean isPermanent) {
         ItemStack item = new ItemStack(customBlock.material());
         item.editMeta(meta -> {
             meta.displayName(MiniMessage.miniMessage().deserialize("<!italic><green>Custom Block " + customBlock.name() + " </green>"));
+            meta.getPersistentDataContainer().set(new NamespacedKey(ZombieShooter.getInstance(), "permanent_block"), PersistentDataType.BOOLEAN, isPermanent);
             meta.getPersistentDataContainer().set(new NamespacedKey(ZombieShooter.getInstance(), "block_id"), PersistentDataType.SHORT, customBlock.id());
         });
         item.setAmount(amount);
@@ -68,21 +76,9 @@ public class GetBlock implements CommandExecutor, TabExecutor {
     public @Nullable List<String> onTabComplete(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
 
         if(!sender.hasPermission(PermissionCommand.getBlock)) return List.of();
-
-        if (args.length == 1) {
-            List<String> materialList = new ArrayList<>();
-            for (CustomBlock customBlock : CustomBlock.values()) {
-                materialList.add(customBlock.toString());
-            }
-            return materialList;
-        }
-        if(args.length == 2) {
-            List<String> numList = new ArrayList<>();
-            for (int i = 0 ; i < 65; i += 16) {
-                numList.add(String.valueOf(i));
-            }
-            return numList;
-        }
+        if (args.length == 1) return Arrays.stream(CustomBlock.values()).map(CustomBlock::toString).collect(Collectors.toList());
+        if(args.length == 2) return List.of("true", "false");
+        if(args.length == 3) return IntStream.range(16, 129).filter(i -> i % 16 == 0).mapToObj(String::valueOf).collect(Collectors.toList());
         return List.of();
     }
 }

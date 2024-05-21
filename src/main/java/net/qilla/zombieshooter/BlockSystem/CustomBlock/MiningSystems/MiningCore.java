@@ -17,8 +17,9 @@ public class MiningCore {
                 packet.getPos().getZ());
         Block block = blockLoc.getBlock();
 
+        if (block.hasMetadata("locked_block")) return;
         CustomBlock customBlock = CustomBlockRegistry.getFromRegistryLoc(blockLoc);
-        if(customBlock == null || player.getGameMode() == GameMode.CREATIVE) return;
+        if(customBlock == null) return;
         MiningCustom.MiningInstance miningInstance = new MiningCustom.MiningInstance(player.getUniqueId(), block.hashCode());
 
         switch (packet.getAction()) {
