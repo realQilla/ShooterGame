@@ -86,7 +86,7 @@ public class MiningCustom {
         block.getWorld().playSound(block.getLocation(), customBlock.sound(), 1, 0.75f);
         block.getWorld().spawnParticle(Particle.BLOCK, block.getLocation().add(0.5, 0.5, 0.5), 50, 0.25, 0.25, 0.25, 0, customBlock.material().createBlockData());
         itemOutput();
-        if (customBlock.getNode().withinNode() > 1) {
+        if (customBlock.getNode() != null) {
             nodeLogic();
             return;
         }
@@ -106,22 +106,17 @@ public class MiningCustom {
     }
 
     private void nodeLogic() {
-        if (block.hasMetadata(BlockKey.blockAmount.getKey())) {
-            final int newAmount = block.getMetadata(BlockKey.blockAmount.getKey()).getFirst().asInt() - 1;
-            if(newAmount < 1) {
-                removeBlock();
-                return;
-            }
-            block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ZombieShooter.getInstance(), newAmount));
-            return;
-        }
-        block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ZombieShooter.getInstance(), customBlock.getNode().withinNode() - 1));
+        if (!block.hasMetadata(BlockKey.blockAmount.getKey())) block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ZombieShooter.getInstance(), customBlock.getNode().withinNode() - 1));
+
+        final int newAmount = block.getMetadata(BlockKey.blockAmount.getKey()).getFirst().asInt() - 1;
+        block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ZombieShooter.getInstance(), newAmount));
+        if(newAmount < 0) removeBlock();
     }
 
     private void lockBlock() {
         block.setMetadata(BlockKey.lockedBlock.getKey(), new FixedMetadataValue(ZombieShooter.getInstance(), true));
-        block.setType(customBlock.getNode().fillMaterial());
-        Bukkit.getScheduler().runTaskLater(ZombieShooter.getInstance(), this::unlockBlock, customBlock.getNode().respawnTime());
+        block.setType(customBlock.fillMaterial());
+        Bukkit.getScheduler().runTaskLater(ZombieShooter.getInstance(), this::unlockBlock, customBlock.respawnSec() * 20L);
     }
 
     private void unlockBlock() {
