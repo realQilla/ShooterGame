@@ -27,7 +27,7 @@ tasks.register<Jar>("exportJar") {
     archiveBaseName.set(project.name)
     archiveVersion.set(project.version.toString())
     from(sourceSets.main.get().output)
-    destinationDirectory.set(file("C:\\Users\\Richard\\Development\\Servers\\Latest\\plugins"))
+    destinationDirectory.set(file("C:\\Users\\Richard\\Development\\Servers\\Servers Proxy\\Zombies\\plugins"))
 }
 
 tasks.named("build") {

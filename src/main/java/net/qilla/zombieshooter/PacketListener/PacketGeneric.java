@@ -1,10 +1,7 @@
 package net.qilla.zombieshooter.PacketListener;
 
 import io.netty.channel.*;
-import net.minecraft.network.protocol.game.ClientboundSelectAdvancementsTabPacket;
-import net.minecraft.network.protocol.game.ClientboundUpdateAdvancementsPacket;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
-import net.minecraft.network.protocol.game.ServerboundSeenAdvancementsPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.qilla.zombieshooter.BlockSystem.CustomBlock.MiningSystems.MiningCore;
 import org.bukkit.craftbukkit.entity.CraftPlayer;

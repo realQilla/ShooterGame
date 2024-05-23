@@ -1,5 +1,6 @@
 package net.qilla.zombieshooter.BlockSystem.BlockDatabase;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.jetbrains.annotations.NotNull;
@@ -25,11 +26,11 @@ public final class BlockMapper {
     public void mapChunkFromDB(World world, final ChunkCoord chunkCoord) {
         executorService.submit(() -> {
             BlockDBManager chunkHolder = new BlockDBManager(world, chunkCoord);
-            if (!chunkHolder.lookupChunkInDB()) return;
+            if(!chunkHolder.lookupChunkInDB()) return;
             try {
                 ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.computeIfAbsent(world.getName(), k -> new ConcurrentHashMap<>());
                 localChunkMap.putAll(chunkHolder.getChunkFromDB());
-            } catch (IOException e) {
+            } catch(IOException e) {
                 throw new RuntimeException(e);
             }
         });
@@ -37,11 +38,11 @@ public final class BlockMapper {
 
     public void unMapChunkSendToDB(final World world, final ChunkCoord chunkCoord) {
         executorService.submit(() -> {
-            if (!globalChunkMap.containsKey(world.getName())) return;
+            if(!globalChunkMap.containsKey(world.getName())) return;
             globalChunkMap.get(world.getName()).computeIfPresent(chunkCoord, (cc, blockMap) -> {
                 try {
                     new BlockDBManager(world, chunkCoord).sendChunkToDB(blockMap);
-                } catch (IOException e) {
+                } catch(IOException e) {
                     throw new RuntimeException(e);
                 }
                 return null;
@@ -49,16 +50,22 @@ public final class BlockMapper {
         });
     }
 
-    public void sendWorldToDB(World world) {
-        Map<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.get(world.getName());
-        if (localChunkMap == null) return;
-        localChunkMap.forEach((chunkCoord, blockMap) -> {
-            try {
-                new BlockDBManager(world, chunkCoord).sendChunkToDB(blockMap);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
+    public void sendWorldToDB(final World world) {
+        executorService.submit(() -> {
+            Map<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.get(world.getName());
+            if(localChunkMap == null) return;
+            localChunkMap.forEach((chunkCoord, blockMap) -> {
+                try {
+                    new BlockDBManager(world, chunkCoord).sendChunkToDB(blockMap);
+                } catch(IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
         });
+    }
+
+    public void sendGlobalToDB() {
+        Bukkit.getWorlds().forEach(this::sendWorldToDB);
     }
 
     @NotNull
@@ -80,7 +87,7 @@ public final class BlockMapper {
         final MineableData mineableData = new MineableData(isPermanent, blockID);
         final ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.computeIfAbsent(world.getName(), k -> new ConcurrentHashMap<>());
         localChunkMap.compute(chunkCoord, (cc, blockMap) -> {
-            if (blockMap == null) blockMap = new ConcurrentHashMap<>();
+            if(blockMap == null) blockMap = new ConcurrentHashMap<>();
             blockMap.put(blockIndex, mineableData);
             return blockMap;
         });
@@ -91,9 +98,9 @@ public final class BlockMapper {
         final ChunkCoord chunkCoord = getChunkCoord(loc);
         final int blockIndex = getBlockIndex(loc);
         final ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.get(world.getName());
-        if (localChunkMap == null) return;
+        if(localChunkMap == null) return;
         localChunkMap.compute(chunkCoord, (cc, blockMap) -> {
-            if (blockMap == null) return null;
+            if(blockMap == null) return null;
             blockMap.remove(blockIndex);
             return blockMap;
         });

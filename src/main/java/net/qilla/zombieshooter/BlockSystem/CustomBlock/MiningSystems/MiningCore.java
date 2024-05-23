@@ -17,17 +17,17 @@ public class MiningCore {
                 packet.getPos().getY(),
                 packet.getPos().getZ());
         Block block = blockLoc.getBlock();
-
-        if (block.hasMetadata(BlockKey.lockedBlock.getKey())) return;
+        if (block.hasMetadata(BlockKey.lockedBlock.getKey())) {
+            return;
+        }
         MineableData mineableData = BlockMapper.getInstance().getMineableData(blockLoc);
         if(mineableData == null) return;
         if(player.getGameMode() == GameMode.CREATIVE) return;
         MiningCustom.MiningInstance miningInstance = new MiningCustom.MiningInstance(player.getUniqueId(), block.hashCode());
-
         switch (packet.getAction()) {
             case ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK: {
-                if (MiningCustom.lookup(miningInstance)) MiningCustom.getMiningInstance(player, miningInstance).startMining(block, mineableData);
-                 else new MiningCustom(player, miningInstance).startMining(block, mineableData);
+                //if (MiningCustom.lookup(miningInstance)) MiningCustom.getMiningInstance(player, miningInstance).startMining(block, mineableData);
+                 new MiningCustom(player, miningInstance).startMining(block, mineableData);
                 break;
             }
 

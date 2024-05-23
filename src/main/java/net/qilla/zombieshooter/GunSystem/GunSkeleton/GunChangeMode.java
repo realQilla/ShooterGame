@@ -27,7 +27,7 @@ public class GunChangeMode extends GunCore {
         }
 
         final int fireMode = getNextFireMode(gunType, dataContainer);
-        GunDisplay.getDisplayMap(player).setCurrentMode(fireMode);
+        //GunDisplay.getDisplayMap(player).setCurrentMode(fireMode);
         updateFireMode(gunItem, fireMode);
         player.playSound(player.getLocation(), changeMode.getSound(), changeMode.getVolume(), changeMode.getPitch());
     }

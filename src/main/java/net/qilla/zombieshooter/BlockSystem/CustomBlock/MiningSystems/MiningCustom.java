@@ -28,6 +28,7 @@ public class MiningCustom {
 
     private static final Map<MiningInstance, MiningCustom> mineMap = new HashMap<>();
 
+    private BukkitTask damageTask = null;
     private BukkitTask mineTask = null;
     private final Player player;
     private Block block;
@@ -47,6 +48,7 @@ public class MiningCustom {
         this.customBlock = CustomBlockRegistry.getFromRegistryID(mineableData.blockID());
         this.breakProgress = 0;
 
+        if(!hasCorrectTool()) return;
         if (customBlock.breakTime() == null) return;
         if (customBlock.breakTime() == 0) instantMine();
         else progressiveMine();
@@ -57,14 +59,14 @@ public class MiningCustom {
     }
 
     private void progressiveMine() {
-        mineTask = Bukkit.getScheduler().runTaskTimer(ZombieShooter.getInstance(), () -> {
+        damageTask = Bukkit.getScheduler().runTaskTimer(ZombieShooter.getInstance(), () -> {
             if (breakProgress >= 9) finishedMining();
-            else damageBlock(breakProgress);
+            else crackBlock(breakProgress);
             breakProgress++;
-        }, 0, customBlock.breakTime() / 9);
+        }, 0, Math.round(customBlock.breakTime() / 9.0));
     }
 
-    private void damageBlock(int breakProgress) {
+    private void crackBlock(int breakProgress) {
         ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
         BlockPos blockPos = new BlockPos(block.getX(), block.getY(), block.getZ());
         var connection = nmsPlayer.connection;
@@ -93,6 +95,12 @@ public class MiningCustom {
         removeBlock();
     }
 
+    private void resendMine() {
+        final MiningInstance newMiningInstance = new MiningInstance(player.getUniqueId(), block.hashCode());
+        //final MineableData newMineableData = new MineableData();
+        new MiningCustom(player, newMiningInstance).startMining(block, mineableData);
+    }
+
     private void removeBlock() {
         new BlockBreakEvent(block, player).callEvent();
         block.removeMetadata(BlockKey.blockAmount.getKey(), ZombieShooter.getInstance());
@@ -111,6 +119,7 @@ public class MiningCustom {
         final int newAmount = block.getMetadata(BlockKey.blockAmount.getKey()).getFirst().asInt() - 1;
         block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ZombieShooter.getInstance(), newAmount));
         if(newAmount < 0) removeBlock();
+        //else MiningCore.sentListener(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, new BlockPos(block.getX(), block.getY(), block.getZ()), Direction.fromYRot(player.getPitch())), player);
     }
 
     private void lockBlock() {
@@ -122,11 +131,18 @@ public class MiningCustom {
     private void unlockBlock() {
         block.setType(customBlock.material());
         block.removeMetadata(BlockKey.lockedBlock.getKey(), ZombieShooter.getInstance());
+        block.getWorld().playSound(block.getLocation(), customBlock.sound(), 1, 0.0f);
+        block.getWorld().spawnParticle(Particle.BLOCK, block.getLocation().add(0.6, 0.6, 0.6), 50, 0.25, 0.25, 0.25, 0, customBlock.material().createBlockData());
+    }
+
+    private boolean hasCorrectTool() {
+        if (customBlock.correctTool() == null) return true;
+        return customBlock.correctTool().contains(player.getInventory().getItemInMainHand().getType());
     }
 
     protected void end() {
-        damageBlock(-1);
-        if (mineTask != null) mineTask.cancel();
+        crackBlock(-1);
+        if (damageTask != null) damageTask.cancel();
         mineMap.remove(new MiningInstance(player.getUniqueId(), block.hashCode()));
     }
 

@@ -55,6 +55,10 @@ public class StatManager extends StatCore {
         StatDisplay.getStatDisplay(playerUUID).updateDisplay();
     }
 
+    public void killPlayer() {
+        player.setHealth(0);
+    }
+
     public void resetHealth() {
         super.setHealth(BaseValues.BASE_HEALTH.getValue());
         UpdatePlayer.healthBarDisplay(player, BaseValues.BASE_HEALTH.getValue(), super.getStats().getMaxHealth());

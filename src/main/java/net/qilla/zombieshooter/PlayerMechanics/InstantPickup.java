@@ -2,10 +2,13 @@ package net.qilla.zombieshooter.PlayerMechanics;
 
 import net.qilla.zombieshooter.Utils.ItemManagement;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
-public class InstantPickup {
+public class InstantPickup implements Listener {
 
+    @EventHandler
     public void entityDropItem(EntityDeathEvent event) {
         Player player = event.getEntity().getKiller();
 

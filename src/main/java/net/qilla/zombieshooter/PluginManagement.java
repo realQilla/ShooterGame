@@ -9,10 +9,9 @@ import net.qilla.zombieshooter.PacketListener.PacketGeneric;
 import net.qilla.zombieshooter.Command.GetArmor;
 import net.qilla.zombieshooter.Command.GetBlock;
 import net.qilla.zombieshooter.Command.GetGun;
-import net.qilla.zombieshooter.CorpseSystem.CorpseListener;
 import net.qilla.zombieshooter.GunSystem.GunCreation.GunRegistry;
 import net.qilla.zombieshooter.GunSystem.WeaponListener;
-import net.qilla.zombieshooter.PlayerMechanics.MechanicListener;
+import net.qilla.zombieshooter.PlayerMechanics.InstantPickup;
 import net.qilla.zombieshooter.StatSystem.StatListener;
 import net.qilla.zombieshooter.StatSystem.StatManagement.StatManager;
 import org.bukkit.Bukkit;
@@ -38,8 +37,7 @@ public class PluginManagement implements Listener {
 
         Bukkit.getServer().getPluginManager().registerEvents(this, plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new WeaponListener(), plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new MechanicListener(), plugin);
-        Bukkit.getServer().getPluginManager().registerEvents(new CorpseListener(), plugin);
+        Bukkit.getServer().getPluginManager().registerEvents(new InstantPickup(), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new StatListener(), plugin);
         Bukkit.getServer().getPluginManager().registerEvents(new BlockDBListener(), plugin);
 
@@ -49,7 +47,7 @@ public class PluginManagement implements Listener {
     }
 
     protected void onDisable() {
-        Bukkit.getWorlds().forEach(BlockMapper.getInstance()::sendWorldToDB);
+        BlockMapper.getInstance().sendGlobalToDB();
         Bukkit.getOnlinePlayers().forEach(player -> {
             player.kick(MiniMessage.miniMessage().deserialize("<red>Server is reloading</red>"));
         });

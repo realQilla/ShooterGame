@@ -13,19 +13,21 @@ public enum CustomBlock {
             Material.AIR,
             null,
             null,
-            0,
+            10,
             Sound.BLOCK_STONE_BREAK,
             0,
-            0),
+            0,
+            null),
     ROTTEN_WOOD(2,
             Material.JUNGLE_PLANKS,
             Material.AIR,
             null,
             List.of(new ItemDrops(Material.STICK, 2, 4, 1)),
-            80,
+            1,
             Sound.BLOCK_WOOD_BREAK,
             5,
-            0),
+            0,
+            null),
     WOODEN_PLANKS(3,
             Material.SPRUCE_PLANKS,
             Material.AIR,
@@ -33,7 +35,9 @@ public enum CustomBlock {
             List.of(new ItemDrops(Material.STICK, 2, 4, 1)),
             0,
             Sound.BLOCK_WOOD_BREAK,
-            40, 1),
+            1,
+            1,
+            List.of(Material.WOODEN_AXE, Material.STONE_AXE, Material.IRON_AXE, Material.DIAMOND_AXE, Material.NETHERITE_AXE)),
     CRACKED_STONE(4,
             Material.COBBLESTONE,
             Material.AIR,
@@ -41,8 +45,9 @@ public enum CustomBlock {
             null,
             80,
             Sound.BLOCK_STONE_BREAK,
-            120,
-            3),
+            1,
+            3,
+            List.of(Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.NETHERITE_PICKAXE)),
     COBBLESTONE_NODE(5,
             Material.COBBLESTONE,
             Material.BEDROCK,
@@ -51,16 +56,18 @@ public enum CustomBlock {
             40,
             Sound.BLOCK_STONE_BREAK,
             10,
-            0),
+            0,
+            List.of(Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.NETHERITE_PICKAXE)),
     COAL_NODE(6,
             Material.COAL_ORE,
             Material.BEDROCK,
             new NodeBlock(12),
             List.of(new ItemDrops(Material.COAL, 1, 1, 0.75)),
-            80,
+            10,
             Sound.BLOCK_STONE_BREAK,
             20,
-            0);
+            0,
+    List.of(Material.WOODEN_PICKAXE, Material.STONE_PICKAXE, Material.IRON_PICKAXE, Material.DIAMOND_PICKAXE, Material.NETHERITE_PICKAXE));
 
     private final short id;
     private final Material material;
@@ -71,8 +78,9 @@ public enum CustomBlock {
     private final Sound sound;
     private final Integer breakTime;
     private final byte hardness;
+    private final List<Material> correctTool;
 
-    CustomBlock(int id, @NotNull Material material, Material fillMaterial, @Nullable NodeBlock nodeBlock, @Nullable List<ItemDrops> itemDrops, int respawnSec, @NotNull Sound sound, @Nullable Integer breakTime, int hardness) {
+    CustomBlock(int id, @NotNull Material material, Material fillMaterial, @Nullable NodeBlock nodeBlock, @Nullable List<ItemDrops> itemDrops, int respawnSec, @NotNull Sound sound, @Nullable Integer breakTime, int hardness, List<Material> correctTool) {
         if (id < 0 || id > Short.MAX_VALUE)
             throw new IllegalArgumentException("ID must be between 0 and " + Short.MAX_VALUE);
         if (breakTime != null && breakTime < 0) throw new IllegalArgumentException("Break time cannot be less than 0");
@@ -88,6 +96,7 @@ public enum CustomBlock {
         this.respawnSec = respawnSec;
         this.breakTime = breakTime;
         this.hardness = (byte) hardness;
+        this.correctTool = correctTool;
     }
 
     public short id() {
@@ -129,6 +138,11 @@ public enum CustomBlock {
 
     public int hardness() {
         return hardness;
+    }
+
+    @Nullable
+    public List<Material> correctTool() {
+        return correctTool;
     }
 
     @Nullable
