@@ -1,14 +1,11 @@
 plugins {
     id("java")
     id("io.papermc.paperweight.userdev") version "1.7.1"
+    id("com.github.johnrengelman.shadow") version "8.1.1"
 }
 
 group = "net.qilla"
-version = "1.20.6-0.DEV"
-
-java {
-    toolchain.languageVersion.set(JavaLanguageVersion.of(21))
-}
+version = "0.0.1"
 
 repositories {
     mavenCentral()
@@ -16,36 +13,31 @@ repositories {
     maven("https://s01.oss.sonatype.org/content/repositories/snapshots/")
 }
 
+configurations.create("shade")
+
 dependencies {
     paperweight.paperDevBundle("1.20.6-R0.1-SNAPSHOT")
     implementation("net.kyori:adventure-api:4.17.0")
-    implementation("com.google.code.gson:gson:2.10.1")
-}
-
-tasks.register<Jar>("exportJar") {
-    dependsOn("build")
-    archiveBaseName.set(project.name)
-    archiveVersion.set(project.version.toString())
-    from(sourceSets.main.get().output)
-    destinationDirectory.set(file("C:\\Users\\Richard\\Development\\Servers\\Servers Proxy\\Zombies\\plugins"))
-}
-
-tasks.named("build") {
-    finalizedBy("exportJar")
+    "shade"("com.mysql:mysql-connector-j:8.0.33")
 }
 
 tasks {
-    compileJava {
-        options.encoding = Charsets.UTF_8.name()
-        options.release = 21
-    }
-    javadoc {
-        options.encoding = Charsets.UTF_8.name()
+    build {
+        dependsOn("shadowJar")
     }
 
-    processResources {
-        filesMatching("plugin.yml") {
-            expand("projectVersion" to project.version)
-        }
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.release.set(21)
     }
+
+    withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
+        configurations = listOf(project.configurations.getByName("shade"))
+        destinationDirectory.set(file("C:\\Users\\Richard\\Development\\Servers\\Servers Proxy\\Zombies\\plugins"))
+    }
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
 }

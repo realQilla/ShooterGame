@@ -1,6 +1,6 @@
-name: ZombieShooter
+name: ShooterGame
 version: ${projectVersion}
-main: net.qilla.zombieshooter.ZombieShooter
+main: net.qilla.shootergame.ShooterGame
 api-version: '1.20'
 load: STARTUP
 author: Qilla
