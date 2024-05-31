@@ -58,6 +58,13 @@ public final class BlockDBListener implements Listener {
         if(!pdc.has(new NamespacedKey(ShooterGame.getInstance(), "permanent_block"))) return;
         final boolean isPermanent = Boolean.TRUE.equals(pdc.get(new NamespacedKey(ShooterGame.getInstance(), "permanent_block"), PersistentDataType.BOOLEAN));
         final short blockID = pdc.get(new NamespacedKey(ShooterGame.getInstance(), "block_id"), PersistentDataType.SHORT);
+
+        if(blockMapper.getMineableData(block.getLocation()) != null) {
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>There already exists a custom block in this position.</red> <yellow><bold><click:run_command:rcb><hover:show_text:'<gray>Remove this block?</gray>'>REMOVE!</hover></click></bold></yellow>"));
+            event.setCancelled(true);
+            return;
+        }
+
         blockMapper.addBlock(event.getBlock().getLocation(), blockID, isPermanent);
 
         MineableData mineableData = blockMapper.getMineableData(block.getLocation());

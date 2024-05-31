@@ -112,7 +112,7 @@ public class GunReload {
                 player.playSound(player.getLocation(), reloadMagazineEnd.getSound(), reloadMagazineEnd.getVolume(), reloadMagazineEnd.getPitch());
 
                 setReloading(false);
-                GunCooldown.getInstance().genericCooldown(player, GunCooldown.ActionCooldown.RECENT_RELOAD, true);
+                GunCooldown.normalCD(player, GunCooldown.ActionCooldown.RECENT_RELOAD, true);
                 cancelReload();
             }
         }
@@ -134,8 +134,8 @@ public class GunReload {
         }
     }
     private boolean canReload(Player player, PersistentDataContainer dataContainer) {
-        return GunCooldown.getInstance().startOverridableCD(player, GunCooldown.ActionCooldown.ACTION_PREVENTS_RELOAD, false) ||
-                GunCooldown.getInstance().genericCooldown(player, GunCooldown.ActionCooldown.RECENT_RELOAD, true) ||
+        return GunCooldown.overridableCD(player, GunCooldown.ActionCooldown.ACTION_PREVENTS_RELOAD, false) ||
+                GunCooldown.normalCD(player, GunCooldown.ActionCooldown.RECENT_RELOAD, true) ||
                 Boolean.TRUE.equals(dataContainer.get(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN));
     }
 

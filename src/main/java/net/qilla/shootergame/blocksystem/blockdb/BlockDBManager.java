@@ -2,6 +2,7 @@ package net.qilla.shootergame.blocksystem.blockdb;
 
 import com.google.gson.Gson;
 import io.leangen.geantyref.TypeToken;
+import org.bukkit.Bukkit;
 import org.bukkit.World;
 
 import java.io.*;
@@ -34,7 +35,7 @@ public final class BlockDBManager {
         BufferedWriter writer = new BufferedWriter(new FileWriter(this.path.toFile()));
         gson.toJson(blockMap, writer);
         writer.close();
-        System.out.println("Chunk data for " + this.chunkCoord + " has been saved to the database.");
+        Bukkit.getLogger().info("Chunk data for " + this.chunkCoord + " has been saved to the database.");
     }
 
     public Map<ChunkCoord, Map<Integer, MineableData>> getChunkFromDB() throws IOException {
@@ -46,13 +47,13 @@ public final class BlockDBManager {
         reader.close();
         Map<ChunkCoord, Map<Integer, MineableData>> chunkDataMap = new HashMap<>();
         chunkDataMap.put(this.chunkCoord, blockMap);
-        System.out.println("Chunk " + this.chunkCoord + " has been loaded into the chunk pool.");
+        Bukkit.getLogger().info("Chunk " + this.chunkCoord + " has been loaded into the chunk pool.");
         return chunkDataMap;
     }
 
     private void deleteChunkFromDB() throws IOException {
         if (!(Files.exists(this.path.getParent()) || Files.exists(this.path))) throw new FileNotFoundException("Could not delete " + this.chunkCoord + " because the file or directory does not exist.");
-        System.out.println("Chunk data for " + this.chunkCoord + " has been deleted from the database.");
+        Bukkit.getLogger().info("Chunk data for " + this.chunkCoord + " has been deleted from the database.");
         Files.delete(this.path);
     }
 

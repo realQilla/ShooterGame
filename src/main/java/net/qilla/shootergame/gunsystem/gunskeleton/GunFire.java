@@ -27,8 +27,9 @@ import static net.qilla.shootergame.cooldown.GunCooldown.ActionCooldown.*;
 
 public final class GunFire {
 
-    private BukkitTask fireTask = null;
+    private final ShooterGame plugin = ShooterGame.getInstance();
 
+    private BukkitTask fireTask = null;
     private final Player player;
     private final GunBase gunBase;
     private ItemStack gunItem;
@@ -59,10 +60,10 @@ public final class GunFire {
 
     public void begin() {
         if(fireCooldown !=0 )
-            if (GunCooldown.getInstance().startFireCD(player, fireCooldown, true)) return;
+            if (GunCooldown.startFireCD(player, fireCooldown, true)) return;
         if(recentReload) return;
-        if(GunCooldown.getInstance().genericCooldown(player, RECENT_RELOAD, false)) return;
-        GunCooldown.getInstance().startOverridableCD(player, ACTION_PREVENTS_RELOAD, true);
+        if(GunCooldown.normalCD(player, RECENT_RELOAD, false)) return;
+        GunCooldown.overridableCD(player, ACTION_PREVENTS_RELOAD, true);
 
         fireTask = Bukkit.getScheduler().runTaskTimer(ShooterGame.getInstance(), this::fire, 0L, gunBase.getFireMod()[fireMode].perBulletCooldown());
     }

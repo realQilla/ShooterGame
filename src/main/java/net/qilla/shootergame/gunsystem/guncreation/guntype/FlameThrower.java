@@ -31,7 +31,7 @@ public class FlameThrower extends GunBase {
                         "<!italic><red>\uD83D\uDDE1</red> <gray>Damage:</gray> <white>1 ♥</white>",
                         "<!italic><gold>\uD83C\uDFF9</gold> <gray>Range:</gray> <white>32/b</white>",
                         "",
-                        "<!italic><dark_gray>»</dark_gray> <yellow><bold>CLICK F</bold></yellow> <gray>to reload your weapon</gray>",
+                        "<!italic><dark_gray>»</dark_gray> <yellow><bold><key:key.swapOffhand></bold></yellow> <gray>to reload your weapon</gray>",
                         "",
                         "<!italic><gray>Light flamethrower to toast</gray>",
                         "<!italic><gray>your enemies.</gray>",

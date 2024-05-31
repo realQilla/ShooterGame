@@ -12,6 +12,7 @@ import net.qilla.shootergame.blocksystem.customblock.CustomBlockReg;
 import net.qilla.shootergame.command.GetArmor;
 import net.qilla.shootergame.command.GetBlock;
 import net.qilla.shootergame.command.GetGun;
+import net.qilla.shootergame.cooldown.CooldownRegistry;
 import net.qilla.shootergame.database.Database;
 import net.qilla.shootergame.gunsystem.WeaponListener;
 import net.qilla.shootergame.gunsystem.guncreation.GunRegistry;
@@ -38,6 +39,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
     private final PacketGeneric packetGeneric = new PacketGeneric(this);
     private Database database = null;
 
+    private final CooldownRegistry cooldownRegistry = new CooldownRegistry();
     private final GunRegistry gunRegistry = new GunRegistry();
     private final CustomArmorReg customArmorReg = new CustomArmorReg();
     private final LoadedCustomBlockReg loadedCustomBlockReg = new LoadedCustomBlockReg();
@@ -50,7 +52,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
         try {
             database = new Database();
         } catch(SQLException exception) {
-            System.out.println("Unable to connect to the database.");
+            Bukkit.getLogger().severe("Failed to connect to database");
             exception.printStackTrace();
         }
 
@@ -99,6 +101,10 @@ public final class ShooterGame extends JavaPlugin implements Listener {
         packetGeneric.removeListener(player);
         StatManager.getStatManager(player.getUniqueId()).clear();
         //GunDisplay.getDisplayMap(player).remove();
+    }
+
+    public CooldownRegistry getCooldownRegistry() {
+        return cooldownRegistry;
     }
 
     public GunRegistry getGunRegistry() {

@@ -11,7 +11,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.shootergame.ShooterGame;
 import net.qilla.shootergame.armorsystem.armormodel.ArmorSet;
-import net.qilla.shootergame.armorsystem.ArmorPDC;
+import net.qilla.shootergame.armorsystem.ArmorKey;
 import net.qilla.shootergame.armorsystem.armortype.ArmorBase;
 import net.qilla.shootergame.statsystem.statmanagement.StatModel;
 import net.qilla.shootergame.util.ItemManagement;
@@ -86,7 +86,7 @@ public class GetArmor {
         final Optional<ArmorSet> possibleSet;
         try {
             possibleSet = Optional.of(ArmorSet.valueOf(specifiedSet));
-        } catch (IllegalArgumentException e) {
+        } catch(IllegalArgumentException e) {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>That armor set does not exist.</red>"));
             return 0;
         }
@@ -108,15 +108,15 @@ public class GetArmor {
             meta.displayName(MiniMessage.miniMessage().deserialize(pieceBase.getPieceName()));
             List<String> lore = setLore(pieceBase);
             List<Component> loreComponents = new ArrayList<>();
-            for(String loreLine: lore) {
+            for(String loreLine : lore) {
                 loreComponents.add(MiniMessage.miniMessage().deserialize(loreLine));
             }
 
             meta.lore(loreComponents);
-            meta.getPersistentDataContainer().set(ArmorPDC.ARMOR_SET.getKey(), PersistentDataType.STRING, this.armorSet.name());
-            meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_MAX_HEALTH.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getMaxHealth());
-            meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_DEFENSE.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getDefense());
-            meta.getPersistentDataContainer().set(ArmorPDC.ITEM_STAT_REGENERATION.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getRegeneration());
+            meta.getPersistentDataContainer().set(ArmorKey.ARMOR_SET.getKey(), PersistentDataType.STRING, this.armorSet.name());
+            meta.getPersistentDataContainer().set(ArmorKey.ITEM_STAT_MAX_HEALTH.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getMaxHealth());
+            meta.getPersistentDataContainer().set(ArmorKey.ITEM_STAT_DEFENSE.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getDefense());
+            meta.getPersistentDataContainer().set(ArmorKey.ITEM_STAT_REGENERATION.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getRegeneration());
             meta.setAttributeModifiers(null);
             meta.addItemFlags(ItemFlag.HIDE_ATTRIBUTES);
         });

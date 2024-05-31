@@ -26,7 +26,7 @@ public class GunChangeMode {
         PersistentDataContainer dataContainer = gunItem.getItemMeta().getPersistentDataContainer();
         SoundModel changeMode = this.gunBase.getCosmeticMod().changeFireMode();
 
-        if(GunCooldown.getInstance().genericCooldown(player, GunCooldown.ActionCooldown.MODE_CHANGE, true)) return;
+        if(GunCooldown.normalCD(player, GunCooldown.ActionCooldown.MODE_CHANGE, true)) return;
 
         if(this.gunBase.getFireMod().length == 1) {
             player.playSound(player.getLocation(), changeMode.getSound(), changeMode.getVolume(), changeMode.getPitch());

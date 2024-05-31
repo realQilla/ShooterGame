@@ -1,6 +1,6 @@
 package net.qilla.shootergame.statsystem.statmanagement;
 
-import net.qilla.shootergame.armorsystem.ArmorPDC;
+import net.qilla.shootergame.armorsystem.ArmorKey;
 import net.qilla.shootergame.statsystem.actionbar.StatDisplay;
 import net.qilla.shootergame.statsystem.BaseValues;
 import net.qilla.shootergame.statsystem.healthcalc.HealCalc;
@@ -97,34 +97,34 @@ public class StatManager extends StatCore {
      */
 
     private long calcTotalMaxHealth() {
-        return BaseValues.BASE_HEALTH.getValue() + getArmorPDC(ArmorPDC.ITEM_STAT_MAX_HEALTH) + getHeldPDC(ArmorPDC.ITEM_STAT_MAX_HEALTH);
+        return BaseValues.BASE_HEALTH.getValue() + getArmorPDC(ArmorKey.ITEM_STAT_MAX_HEALTH) + getHeldPDC(ArmorKey.ITEM_STAT_MAX_HEALTH);
     }
 
     private long calcTotalDefense() {
-        return BaseValues.BASE_DEFENSE.getValue() + getArmorPDC(ArmorPDC.ITEM_STAT_DEFENSE) + getHeldPDC(ArmorPDC.ITEM_STAT_DEFENSE);
+        return BaseValues.BASE_DEFENSE.getValue() + getArmorPDC(ArmorKey.ITEM_STAT_DEFENSE) + getHeldPDC(ArmorKey.ITEM_STAT_DEFENSE);
     }
 
     private long calcTotalRegeneration() {
-        return getArmorPDC(ArmorPDC.ITEM_STAT_REGENERATION) + getHeldPDC(ArmorPDC.ITEM_STAT_REGENERATION);
+        return getArmorPDC(ArmorKey.ITEM_STAT_REGENERATION) + getHeldPDC(ArmorKey.ITEM_STAT_REGENERATION);
     }
 
     /**
      * Get PDC's from different places
      */
 
-    private long getArmorPDC(ArmorPDC armorPDC) {
+    private long getArmorPDC(ArmorKey armorKey) {
         long totalValue = 0;
         for (ItemStack item : player.getInventory().getArmorContents()) {
-            if (item != null && item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(armorPDC.getKey(), PersistentDataType.LONG)) {
-                totalValue += item.getItemMeta().getPersistentDataContainer().get(armorPDC.getKey(), PersistentDataType.LONG);
+            if (item != null && item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(armorKey.getKey(), PersistentDataType.LONG)) {
+                totalValue += item.getItemMeta().getPersistentDataContainer().get(armorKey.getKey(), PersistentDataType.LONG);
             }
         }
         return totalValue;
     }
 
-    private long getHeldPDC(ArmorPDC armorPDC) {
+    private long getHeldPDC(ArmorKey armorKey) {
         long totalValue = 0;
-        if (player.getInventory().getItemInMainHand().hasItemMeta() && player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(armorPDC.getKey(), PersistentDataType.LONG)) {
+        if (player.getInventory().getItemInMainHand().hasItemMeta() && player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(armorKey.getKey(), PersistentDataType.LONG)) {
             //totalValue += player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().get(armorPDC.getKey(), PersistentDataType.LONG);
         }
         return totalValue;

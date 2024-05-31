@@ -3,7 +3,7 @@ package net.qilla.shootergame.armorsystem;
 import net.qilla.shootergame.ShooterGame;
 import org.bukkit.NamespacedKey;
 
-public enum ArmorPDC {
+public enum ArmorKey {
 
     ARMOR_SET(new NamespacedKey(ShooterGame.getInstance(), "armor_type")),
 
@@ -13,7 +13,7 @@ public enum ArmorPDC {
 
     private final NamespacedKey key;
 
-    ArmorPDC(NamespacedKey key) {
+    ArmorKey(NamespacedKey key) {
         this.key = key;
     }
 
