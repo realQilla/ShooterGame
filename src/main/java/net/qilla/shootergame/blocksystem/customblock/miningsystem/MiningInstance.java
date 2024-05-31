@@ -5,8 +5,8 @@ import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.qilla.shootergame.blocksystem.blockdb.MineableData;
-import net.qilla.shootergame.blocksystem.customblock.BlockKey;
 import net.qilla.shootergame.blocksystem.customblock.CustomBlock;
+import net.qilla.shootergame.blocksystem.customblock.MiningReg;
 import net.qilla.shootergame.util.BlockManagement;
 import net.qilla.shootergame.util.ItemManagement;
 import net.qilla.shootergame.ShooterGame;
@@ -17,34 +17,26 @@ import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.scheduler.BukkitTask;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
-
-public final class MiningCustom {
-
-    private static final Map<MiningInstance, MiningCustom> mineMap = new HashMap<>();
+public final class MiningInstance {
 
     private final ShooterGame plugin = ShooterGame.getInstance();
-    private BukkitTask damageTask = null;
-    private BukkitTask mineTask = null;
+    private final MiningReg miningReg = plugin.getMiningReg();
+
+    private final MiningID miningID;
+    private BukkitTask breakTask = null;
     private final Player player;
-    private Block block;
-    private MineableData mineableData;
-    private CustomBlock customBlock;
-    private int breakProgress = 0;
+    private final Block block;
+    private final MineableData mineableData;
+    private final CustomBlock customBlock;
 
-    MiningCustom(Player player, MiningInstance miningInstance) {
+    private int breakProgress;
+
+    MiningInstance(Player player, MiningID miningID, MineableData mineableData, Block block) {
         this.player = player;
+        this.miningID = miningID;
 
-        mineMap.put(miningInstance, this);
-    }
-
-    void startMining(Block block, MineableData mineableData) {
         this.block = block;
         this.mineableData = mineableData;
         this.customBlock = plugin.getCustomBlockRegistry().getFromRegistryID(mineableData.blockID());
@@ -57,12 +49,15 @@ public final class MiningCustom {
     }
 
     private void instantMine() {
-        Bukkit.getScheduler().runTask(ShooterGame.getInstance(), this::finishedMining);
+        Bukkit.getScheduler().runTask(ShooterGame.getInstance(), this::finish);
     }
 
     private void progressiveMine() {
-        damageTask = Bukkit.getScheduler().runTaskTimer(ShooterGame.getInstance(), () -> {
-            if (breakProgress >= 9) finishedMining();
+        breakTask = Bukkit.getScheduler().runTaskTimer(ShooterGame.getInstance(), () -> {
+            if (breakProgress >= 9) {
+                breakTask.cancel();
+                finish();
+            }
             else crackBlock(breakProgress);
             breakProgress++;
         }, 0, Math.round(customBlock.breakTime() / 9.0));
@@ -85,8 +80,8 @@ public final class MiningCustom {
         }
     }
 
-    private void finishedMining() {
-        end();
+    private void finish() {
+        crackBlock(-1);
         BlockManagement.popBlock(block.getLocation(), new TriSound(customBlock.sound(), 1, 0.75f));
         itemOutput();
         if (customBlock.getNode() != null) {
@@ -96,16 +91,8 @@ public final class MiningCustom {
         removeBlock();
     }
 
-    private void resendMine() {
-        final MiningInstance newMiningInstance = new MiningInstance(player.getUniqueId(), block.hashCode());
-        //final MineableData newMineableData = new MineableData();
-        new MiningCustom(player, newMiningInstance).startMining(block, mineableData);
-    }
-
     private void removeBlock() {
         new BlockBreakEvent(block, player).callEvent();
-        block.removeMetadata(BlockKey.blockAmount.getKey(), ShooterGame.getInstance());
-        block.removeMetadata(BlockKey.lockedBlock.getKey(), ShooterGame.getInstance());
         if (mineableData.isPermanent()) {
             lockBlock();
             return;
@@ -115,23 +102,21 @@ public final class MiningCustom {
     }
 
     private void nodeLogic() {
-        if (!block.hasMetadata(BlockKey.blockAmount.getKey())) block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ShooterGame.getInstance(), customBlock.getNode().withinNode() - 1));
+        if(!miningReg.isNodeMapped(block)) miningReg.setNode(block, customBlock.getNode().withinNode());
 
-        final int newAmount = block.getMetadata(BlockKey.blockAmount.getKey()).getFirst().asInt() - 1;
-        block.setMetadata(BlockKey.blockAmount.getKey(), new FixedMetadataValue(ShooterGame.getInstance(), newAmount));
-        if(newAmount < 0) removeBlock();
-        //else MiningCore.sentListener(new ServerboundPlayerActionPacket(ServerboundPlayerActionPacket.Action.START_DESTROY_BLOCK, new BlockPos(block.getX(), block.getY(), block.getZ()), Direction.fromYRot(player.getPitch())), player);
+        final int nodeAmount = miningReg.subtractNode(block);
+        if(nodeAmount <= 0) removeBlock();
     }
 
     private void lockBlock() {
-        block.setMetadata(BlockKey.lockedBlock.getKey(), new FixedMetadataValue(ShooterGame.getInstance(), true));
+        miningReg.lockBlock(block);
         block.setType(customBlock.fillMaterial());
         Bukkit.getScheduler().runTaskLater(ShooterGame.getInstance(), this::unlockBlock, customBlock.respawnSec() * 20L);
     }
 
     private void unlockBlock() {
-        BlockManagement.setBlock(customBlock.material(), block.getLocation(), new TriSound(customBlock.sound(), 1, 0.75f));
-        block.removeMetadata(BlockKey.lockedBlock.getKey(), ShooterGame.getInstance());
+        miningReg.unlockBlock(block);
+        BlockManagement.setBlock(customBlock.material(), block.getLocation(), new TriSound(customBlock.sound(), 1, 0.0f));
     }
 
     private boolean hasCorrectTool() {
@@ -139,22 +124,9 @@ public final class MiningCustom {
         return customBlock.correctTool().contains(player.getInventory().getItemInMainHand().getType());
     }
 
-    void end() {
+    void forceEnd() {
         crackBlock(-1);
-        if (damageTask != null) damageTask.cancel();
-        mineMap.remove(new MiningInstance(player.getUniqueId(), block.hashCode()));
-    }
-
-    @NotNull
-    public static MiningCustom getMiningInstance(@NotNull Player player, @NotNull MiningInstance miningInstance) {
-        if (mineMap.containsKey(miningInstance)) return mineMap.get(miningInstance);
-        return new MiningCustom(player, miningInstance);
-    }
-
-    public static boolean lookup(MiningInstance miningInstance) {
-        return mineMap.containsKey(miningInstance);
-    }
-
-    public record MiningInstance(UUID playerUUID, int blockHashcode) {
+        if (breakTask != null) breakTask.cancel();
+        miningReg.removeMining(miningID);
     }
 }

@@ -9,6 +9,8 @@ import net.qilla.shootergame.blocksystem.blockdb.BlockDBListener;
 import net.qilla.shootergame.blocksystem.blockdb.BlockMapper;
 import net.qilla.shootergame.blocksystem.blockdb.LoadedCustomBlockReg;
 import net.qilla.shootergame.blocksystem.customblock.CustomBlockReg;
+import net.qilla.shootergame.blocksystem.customblock.MiningReg;
+import net.qilla.shootergame.blocksystem.customblock.miningsystem.MiningForwarder;
 import net.qilla.shootergame.command.GetArmor;
 import net.qilla.shootergame.command.GetBlock;
 import net.qilla.shootergame.command.GetGun;
@@ -45,6 +47,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
     private final CustomArmorReg customArmorReg = new CustomArmorReg();
     private final LoadedCustomBlockReg loadedCustomBlockReg = new LoadedCustomBlockReg();
     private final CustomBlockReg customBlockReg = new CustomBlockReg(this);
+    private final MiningReg miningReg = new MiningReg();
 
     private final BlockMapper blockMapper = new BlockMapper(loadedCustomBlockReg);
 
@@ -127,6 +130,10 @@ public final class ShooterGame extends JavaPlugin implements Listener {
 
     public CustomBlockReg getCustomBlockRegistry() {
         return customBlockReg;
+    }
+
+    public MiningReg getMiningReg() {
+        return miningReg;
     }
 
     public static ShooterGame getInstance() {

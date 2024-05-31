@@ -8,28 +8,17 @@ import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.tree.ArgumentCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.shootergame.ShooterGame;
-import net.qilla.shootergame.armorsystem.armormodel.ArmorSet;
-import net.qilla.shootergame.armorsystem.ArmorKey;
-import net.qilla.shootergame.armorsystem.armortype.ArmorBase;
 import net.qilla.shootergame.blocksystem.blockdb.BlockMapper;
-import net.qilla.shootergame.statsystem.statmanagement.StatModel;
 import net.qilla.shootergame.util.BlockManagement;
-import net.qilla.shootergame.util.ItemManagement;
 import net.qilla.shootergame.util.TriSound;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemFlag;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.RayTraceResult;
-import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -138,6 +127,7 @@ public class RemoveCustomBlock {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid coordinates.</red>"));
             return 0;
         }
+
         final BlockMapper blockMapper = plugin.getBlockMapper();
         final Location blockLoc = new Location(player.getWorld(), possibleX.get(), possibleY.get(), possibleZ.get());
 
@@ -145,7 +135,7 @@ public class RemoveCustomBlock {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>There is no custom block at that position.</red>"));
             return 0;
         } else {
-            BlockManagement.removeBlock(blockLoc, new TriSound(Sound.BLOCK_ANVIL_LAND, 0.5f, 0.0f));
+            BlockManagement.removeBlock(blockLoc, new TriSound(Sound.BLOCK_ANVIL_PLACE, 0.5f, 2.0f));
             blockMapper.removeBlock(blockLoc);
             player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Successfully remove the custom block!</green>"));
         }

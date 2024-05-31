@@ -4,7 +4,7 @@ import io.netty.channel.*;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.qilla.shootergame.ShooterGame;
-import net.qilla.shootergame.blocksystem.customblock.miningsystem.MiningCore;
+import net.qilla.shootergame.blocksystem.customblock.miningsystem.MiningForwarder;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -26,7 +26,9 @@ public class PacketGeneric {
         ChannelDuplexHandler handler = new ChannelDuplexHandler() {
             @Override
             public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-                if (packet instanceof ServerboundPlayerActionPacket breakPacket) new MiningCore(plugin).sentListener(breakPacket, player);
+                if (packet instanceof ServerboundPlayerActionPacket breakPacket) {
+                    new MiningForwarder(plugin).sentListener(breakPacket, player);
+                }
                 super.channelRead(context, packet);
             }
         };
