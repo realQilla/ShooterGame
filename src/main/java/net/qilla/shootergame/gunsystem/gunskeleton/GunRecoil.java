@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import java.util.Random;
 
-public class GunRecoil extends GunCore {
+public class GunRecoil {
 
     public void verticalRecoil(Player player, boolean randomized) {
         Location location = player.getLocation();

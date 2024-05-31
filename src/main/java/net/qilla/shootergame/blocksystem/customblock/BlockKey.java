@@ -3,7 +3,7 @@ package net.qilla.shootergame.blocksystem.customblock;
 import net.qilla.shootergame.ShooterGame;
 import org.bukkit.NamespacedKey;
 
-public class BlockKey {
+public final class BlockKey {
 
     private static final ShooterGame plugin = ShooterGame.getInstance();
 

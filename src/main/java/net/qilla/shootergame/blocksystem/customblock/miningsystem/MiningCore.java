@@ -1,6 +1,7 @@
 package net.qilla.shootergame.blocksystem.customblock.miningsystem;
 
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
+import net.qilla.shootergame.ShooterGame;
 import net.qilla.shootergame.blocksystem.blockdb.BlockMapper;
 import net.qilla.shootergame.blocksystem.blockdb.MineableData;
 import net.qilla.shootergame.blocksystem.customblock.BlockKey;
@@ -9,9 +10,15 @@ import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 
-public class MiningCore {
+public final class MiningCore {
 
-    public static void sentListener(ServerboundPlayerActionPacket packet, Player player) {
+    private final ShooterGame plugin;
+
+    public MiningCore(ShooterGame plugin) {
+        this.plugin = plugin;
+    }
+
+    public void sentListener(ServerboundPlayerActionPacket packet, Player player) {
         Location blockLoc = new Location(player.getWorld(),
                 packet.getPos().getX(),
                 packet.getPos().getY(),
@@ -20,7 +27,7 @@ public class MiningCore {
         if (block.hasMetadata(BlockKey.lockedBlock.getKey())) {
             return;
         }
-        MineableData mineableData = BlockMapper.getInstance().getMineableData(blockLoc);
+        MineableData mineableData = plugin.getBlockMapper().getMineableData(blockLoc);
         if(mineableData == null) return;
         if(player.getGameMode() == GameMode.CREATIVE) return;
         MiningCustom.MiningInstance miningInstance = new MiningCustom.MiningInstance(player.getUniqueId(), block.hashCode());

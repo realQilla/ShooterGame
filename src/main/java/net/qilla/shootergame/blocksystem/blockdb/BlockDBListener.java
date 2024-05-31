@@ -16,9 +16,13 @@ import org.bukkit.event.world.WorldSaveEvent;
 import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
-public class BlockDBListener implements Listener {
+public final class BlockDBListener implements Listener {
 
-    private final BlockMapper blockMapper = BlockMapper.getInstance();
+    private final BlockMapper blockMapper;
+
+    public BlockDBListener(BlockMapper blockMapper) {
+        this.blockMapper = blockMapper;
+    }
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     private void onWorldSave(final WorldSaveEvent event) {

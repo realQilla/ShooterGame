@@ -1,12 +1,8 @@
 package net.qilla.shootergame.cooldown;
 
-import net.qilla.shootergame.gunsystem.guncreation.GunPDC;
-import net.qilla.shootergame.gunsystem.guncreation.guntype.GunBase;
 import net.qilla.shootergame.ShooterGame;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -34,8 +30,8 @@ public class GunCooldown {
      *
      * @param player The player to start the cooldown for
      * @param action The action to start the cooldown for
-     * @param start Whether to just check for the cooldown, or
-     * to check and start.
+     * @param start  Whether to just check for the cooldown, or to check and start.
+     *
      * @return Returns a boolean
      */
 
@@ -45,7 +41,7 @@ public class GunCooldown {
         if(selfRemovingCooldown.contains(cdPlayer)) {
             return true;
         } else if(start) {
-            startSelfRemoving(cdPlayer, action.ticks);
+            startNormalCD(cdPlayer, action.ticks);
         }
         return false;
     }
@@ -56,10 +52,11 @@ public class GunCooldown {
      * @param player
      * @param action
      * @param start
+     *
      * @return
      */
 
-    public boolean nonRemovingCooldown(Player player, ActionCooldown action, boolean start) {
+    public boolean startOverridableCD(Player player, ActionCooldown action, boolean start) {
         CDPlayer cdPlayer = new CDPlayer(player.getUniqueId(), action);
         long setTime = System.currentTimeMillis() + (action.ticks * 50);
         if(callRemovingCooldown.get(cdPlayer) != null && callRemovingCooldown.get(cdPlayer) > System.currentTimeMillis()) {
@@ -79,35 +76,31 @@ public class GunCooldown {
      * Checks if the player has a cooldown for firing a gun,
      *
      * @param player The player to start the cooldown for
-     * @param gunType The action to start the cooldown for
-     * @param start Whether to just check for the cooldown, or
-     * to check and start.
+     * @param length Amount of ticks to put the item on cooldown for.
+     * @param start  Whether to just check for the cooldown, or to check and start.
+     *
      * @return Returns a boolean
      */
 
-    public boolean fireCooldown(Player player, GunBase gunType, ItemStack gunItem, boolean start) {
+    public boolean startFireCD(Player player, int length, boolean start) {
         CDPlayer cdPlayer = new CDPlayer(player.getUniqueId(), FIRED_GUN);
-        int fireMode = gunItem.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
-        if (selfRemovingCooldown.contains(cdPlayer)) {
-            return true;
-        } else if(start) {
-            startSelfRemoving(cdPlayer, gunType.getFireMod()[fireMode].fireCooldown());
-        }
+        if(selfRemovingCooldown.contains(cdPlayer)) return true;
+        else if(start) startNormalCD(cdPlayer, length);
         return false;
     }
 
-    private void startSelfRemoving(CDPlayer cdPlayer, long ticks) {
+    private void startNormalCD(CDPlayer cdPlayer, long ticks) {
         selfRemovingCooldown.add(cdPlayer);
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                selfRemovingCooldown.remove(cdPlayer);
-            }
-        }.runTaskLater(ShooterGame.getInstance(), ticks);
+        Bukkit.getScheduler().runTaskLaterAsynchronously(ShooterGame.getInstance(), () -> {
+            selfRemovingCooldown.remove(cdPlayer);
+        }, ticks);
     }
 
     public enum ActionCooldown {
-        FIRED_GUN(0), ACTION_PREVENTS_RELOAD(12), RECENT_RELOAD(10), MODE_CHANGE(10);
+        FIRED_GUN(0),
+        ACTION_PREVENTS_RELOAD(12),
+        RECENT_RELOAD(10),
+        MODE_CHANGE(10);
 
         final long ticks;
 

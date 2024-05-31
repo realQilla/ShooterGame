@@ -2,6 +2,7 @@ package net.qilla.shootergame.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.qilla.shootergame.ShooterGame;
 import net.qilla.shootergame.gunsystem.guncreation.GunRegistry;
 import net.qilla.shootergame.gunsystem.guncreation.guntype.GunBase;
 import net.qilla.shootergame.gunsystem.guncreation.GunPDC;
@@ -22,6 +23,12 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 
 public class GetGun implements CommandExecutor, TabExecutor {
+
+    private final ShooterGame plugin;
+
+    public GetGun(ShooterGame plugin) {
+        this.plugin = plugin;
+    }
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -44,12 +51,12 @@ public class GetGun implements CommandExecutor, TabExecutor {
         String gunName = args[0];
         String gunTier = args[1];
 
-        if(!GunRegistry.getGunRegistry().containsKey(new GunID(gunName, gunTier))) {
+        if(!plugin.getGunRegistry().getRegistry().containsKey(new GunID(gunName, gunTier))) {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Selected gun does not exist.</red>"));
             return true;
         }
 
-        GunBase gunType = GunRegistry.getGunRegistry().get(new GunID(gunName, gunTier));
+        GunBase gunType = plugin.getGunRegistry().getRegistry().get(new GunID(gunName, gunTier));
 
         ItemStack item = getItemStack(gunType);
         player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
@@ -86,7 +93,7 @@ public class GetGun implements CommandExecutor, TabExecutor {
         if(!sender.hasPermission(PermissionCommand.getBlock)) return List.of();
 
         Map<String, List<String>> gunTypesAndTiers = new HashMap<>();
-        for (Map.Entry<GunID, GunBase> entry : GunRegistry.getGunRegistry().entrySet()) {
+        for (Map.Entry<GunID, GunBase> entry : plugin.getGunRegistry().getRegistry().entrySet()) {
             String gunType = entry.getKey().gunType();
             String gunTier = entry.getKey().tier();
 

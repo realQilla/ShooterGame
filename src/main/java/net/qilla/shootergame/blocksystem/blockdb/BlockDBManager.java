@@ -12,14 +12,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
-public class BlockDBManager {
+public final class BlockDBManager {
 
     private static final Gson gson = new Gson();
 
     private final Path path;
     private final ChunkCoord chunkCoord;
 
-    protected BlockDBManager(World world, ChunkCoord chunkCoord) {
+    BlockDBManager(World world, ChunkCoord chunkCoord) {
         this.path = Paths.get(world.getWorldFolder().getPath() + File.separator + "mineable", chunkCoord.toString() + ".json");
         this.chunkCoord = chunkCoord;
     }

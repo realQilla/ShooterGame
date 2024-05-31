@@ -3,11 +3,10 @@ package net.qilla.shootergame.blocksystem.customblock.miningsystem;
 import net.minecraft.core.BlockPos;
 import net.minecraft.network.protocol.game.ClientboundBlockDestructionPacket;
 import net.minecraft.server.level.ServerPlayer;
-import net.qilla.shootergame.blocksystem.blockdb.BlockMapper;
+import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.qilla.shootergame.blocksystem.blockdb.MineableData;
 import net.qilla.shootergame.blocksystem.customblock.BlockKey;
 import net.qilla.shootergame.blocksystem.customblock.CustomBlock;
-import net.qilla.shootergame.blocksystem.customblock.CustomBlockRegistry;
 import net.qilla.shootergame.util.ItemManagement;
 import net.qilla.shootergame.ShooterGame;
 import org.bukkit.*;
@@ -24,10 +23,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class MiningCustom {
+public final class MiningCustom {
 
     private static final Map<MiningInstance, MiningCustom> mineMap = new HashMap<>();
 
+    private final ShooterGame plugin = ShooterGame.getInstance();
     private BukkitTask damageTask = null;
     private BukkitTask mineTask = null;
     private final Player player;
@@ -36,16 +36,16 @@ public class MiningCustom {
     private CustomBlock customBlock;
     private int breakProgress = 0;
 
-    protected MiningCustom(Player player, MiningInstance miningInstance) {
+    MiningCustom(Player player, MiningInstance miningInstance) {
         this.player = player;
 
         mineMap.put(miningInstance, this);
     }
 
-    protected void startMining(Block block, MineableData mineableData) {
+    void startMining(Block block, MineableData mineableData) {
         this.block = block;
         this.mineableData = mineableData;
-        this.customBlock = CustomBlockRegistry.getFromRegistryID(mineableData.blockID());
+        this.customBlock = plugin.getCustomBlockRegistry().getFromRegistryID(mineableData.blockID());
         this.breakProgress = 0;
 
         if(!hasCorrectTool()) return;
@@ -69,7 +69,7 @@ public class MiningCustom {
     private void crackBlock(int breakProgress) {
         ServerPlayer nmsPlayer = ((CraftPlayer) player).getHandle();
         BlockPos blockPos = new BlockPos(block.getX(), block.getY(), block.getZ());
-        var connection = nmsPlayer.connection;
+        ServerGamePacketListenerImpl connection = nmsPlayer.connection;
         connection.send(new ClientboundBlockDestructionPacket(block.hashCode(), blockPos, breakProgress));
     }
 
@@ -110,7 +110,7 @@ public class MiningCustom {
             return;
         }
         block.setType(Material.AIR);
-        BlockMapper.getInstance().removeBlock(block.getLocation());
+        plugin.getBlockMapper().removeBlock(block.getLocation());
     }
 
     private void nodeLogic() {
@@ -140,7 +140,7 @@ public class MiningCustom {
         return customBlock.correctTool().contains(player.getInventory().getItemInMainHand().getType());
     }
 
-    protected void end() {
+    void end() {
         crackBlock(-1);
         if (damageTask != null) damageTask.cancel();
         mineMap.remove(new MiningInstance(player.getUniqueId(), block.hashCode()));

@@ -1,10 +1,13 @@
 package net.qilla.shootergame.gunsystem;
 
+import net.qilla.shootergame.ShooterGame;
 import net.qilla.shootergame.gunsystem.guncreation.GunPDC;
+import net.qilla.shootergame.gunsystem.guncreation.guntype.GunBase;
 import net.qilla.shootergame.gunsystem.gunutil.CheckValid;
 import net.qilla.shootergame.gunsystem.gunskeleton.GunChangeMode;
 import net.qilla.shootergame.gunsystem.gunskeleton.GunFire;
 import net.qilla.shootergame.gunsystem.gunskeleton.GunReload;
+import net.qilla.shootergame.gunsystem.gunutil.GetFromGun;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -13,10 +16,16 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 
 public class WeaponListener implements Listener {
 
+    private final ShooterGame plugin;
+
+    public WeaponListener(ShooterGame plugin) {
+        this.plugin = plugin;
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {
@@ -27,13 +36,11 @@ public class WeaponListener implements Listener {
 
         event.setCancelled(true);
 
-        if (event.getAction().isRightClick()) {
-            new GunFire().fireMain(player, item);
-        }
+        final ItemStack gunItem = player.getInventory().getItemInMainHand();
+        final GunBase gunBase = this.plugin.getGunRegistry().getGun(GetFromGun.typeID(gunItem.getItemMeta().getPersistentDataContainer()));
 
-        if (event.getAction().isLeftClick()) {
-            new GunChangeMode().modeMain(player, item);
-        }
+        if (event.getAction().isRightClick()) new GunFire(player, gunBase, gunItem).begin();
+        if (event.getAction().isLeftClick()) new GunChangeMode(player, gunBase, gunItem).change();
     }
 
     @EventHandler
@@ -44,7 +51,11 @@ public class WeaponListener implements Listener {
         if (!CheckValid.isValidBoth(offhandItem)) return;
 
         event.setCancelled(true);
-        new GunReload().reloadMain(player);
+
+        final ItemStack gunItem = player.getInventory().getItemInMainHand();
+        final GunBase gunBase = this.plugin.getGunRegistry().getGun(GetFromGun.typeID(gunItem.getItemMeta().getPersistentDataContainer()));
+
+        new GunReload(player, gunBase, gunItem).reloadMain();
     }
 
     @EventHandler
@@ -53,7 +64,7 @@ public class WeaponListener implements Listener {
         ItemStack curItem = player.getInventory().getItem(event.getNewSlot());
         ItemStack prevItem = player.getInventory().getItem(event.getNewSlot());
 
-        GunReload.getInstance().cancelReload();
+        //GunReload.getInstance().cancelReload();
         if(CheckValid.isValidBoth(prevItem)) {
             if (prevItem.getItemMeta().getPersistentDataContainer().get(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN)) {
                 prevItem.editMeta(ItemMeta.class, meta -> {

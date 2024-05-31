@@ -11,24 +11,25 @@ import java.util.Map;
 
 public class GunRegistry {
 
-    private static final Map<GunID, GunBase> gunRegistry = new HashMap<>();
+    private final Map<GunID, GunBase> gunRegistry = new HashMap<>();
 
-    private GunRegistry() {
+    public GunRegistry() {
+        registerAll();
     }
 
-    private static void register(GunID gunID, GunBase gunBase) {
+    private void register(GunID gunID, GunBase gunBase) {
         gunRegistry.put(gunID, gunBase);
     }
 
-    public static GunBase getGun(GunID gunID) {
+    public GunBase getGun(GunID gunID) {
         return gunRegistry.get(gunID);
     }
 
-    public static Map<GunID, GunBase> getGunRegistry() {
+    public Map<GunID, GunBase> getRegistry() {
         return gunRegistry;
     }
 
-    public static void registerAll() {
+    public void registerAll() {
         register(StandardPistol.I().getTypeID(), StandardPistol.I());
         register(StandardPistol.II().getTypeID(), StandardPistol.II());
         register(StandardPistol.III().getTypeID(), StandardPistol.III());

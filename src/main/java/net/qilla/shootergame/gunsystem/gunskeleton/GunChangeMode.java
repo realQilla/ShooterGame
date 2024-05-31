@@ -1,10 +1,8 @@
 package net.qilla.shootergame.gunsystem.gunskeleton;
 
 import net.qilla.shootergame.cooldown.GunCooldown;
-import net.qilla.shootergame.gunsystem.guncreation.GunRegistry;
 import net.qilla.shootergame.gunsystem.guncreation.guntype.GunBase;
 import net.qilla.shootergame.gunsystem.guncreation.GunPDC;
-import net.qilla.shootergame.gunsystem.gunutil.GetFromGun;
 import net.qilla.shootergame.util.SoundModel;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -12,21 +10,30 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 
-public class GunChangeMode extends GunCore {
+public class GunChangeMode {
 
-    public void modeMain(@NotNull Player player, @NotNull ItemStack gunItem) {
+    private final Player player;
+    private final GunBase gunBase;
+    private final ItemStack gunItem;
+
+    public GunChangeMode(@NotNull final Player player, @NotNull final GunBase gunBase, @NotNull final ItemStack gunItem) {
+        this.player = player;
+        this.gunBase = gunBase;
+        this.gunItem = gunItem;
+    }
+
+    public void change() {
         PersistentDataContainer dataContainer = gunItem.getItemMeta().getPersistentDataContainer();
-        GunBase gunType = GunRegistry.getGun(GetFromGun.typeID(dataContainer));
-        SoundModel changeMode = gunType.getCosmeticMod().changeFireMode();
+        SoundModel changeMode = this.gunBase.getCosmeticMod().changeFireMode();
 
         if(GunCooldown.getInstance().genericCooldown(player, GunCooldown.ActionCooldown.MODE_CHANGE, true)) return;
 
-        if(gunType.getFireMod().length == 1) {
+        if(this.gunBase.getFireMod().length == 1) {
             player.playSound(player.getLocation(), changeMode.getSound(), changeMode.getVolume(), changeMode.getPitch());
             return;
         }
 
-        final int fireMode = getNextFireMode(gunType, dataContainer);
+        final int fireMode = getNextFireMode(this.gunBase, dataContainer);
         //GunDisplay.getDisplayMap(player).setCurrentMode(fireMode);
         updateFireMode(gunItem, fireMode);
         player.playSound(player.getLocation(), changeMode.getSound(), changeMode.getVolume(), changeMode.getPitch());

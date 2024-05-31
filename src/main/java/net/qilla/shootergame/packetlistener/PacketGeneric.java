@@ -3,6 +3,7 @@ package net.qilla.shootergame.packetlistener;
 import io.netty.channel.*;
 import net.minecraft.network.protocol.game.ServerboundPlayerActionPacket;
 import net.minecraft.server.network.ServerGamePacketListenerImpl;
+import net.qilla.shootergame.ShooterGame;
 import net.qilla.shootergame.blocksystem.customblock.miningsystem.MiningCore;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -13,13 +14,19 @@ import java.util.UUID;
 
 public class PacketGeneric {
 
+    private final ShooterGame plugin;
+
+    public PacketGeneric(ShooterGame plugin) {
+        this.plugin = plugin;
+    }
+
     private final Set<UUID> playersListened = new HashSet<>();
 
     public void addListener(Player player) {
         ChannelDuplexHandler handler = new ChannelDuplexHandler() {
             @Override
             public void channelRead(ChannelHandlerContext context, Object packet) throws Exception {
-                if (packet instanceof ServerboundPlayerActionPacket breakPacket) MiningCore.sentListener(breakPacket, player);
+                if (packet instanceof ServerboundPlayerActionPacket breakPacket) new MiningCore(plugin).sentListener(breakPacket, player);
                 super.channelRead(context, packet);
             }
         };

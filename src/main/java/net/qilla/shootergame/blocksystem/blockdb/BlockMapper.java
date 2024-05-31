@@ -1,5 +1,6 @@
 package net.qilla.shootergame.blocksystem.blockdb;
 
+import net.qilla.shootergame.ShooterGame;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
@@ -15,20 +16,19 @@ import java.util.concurrent.Executors;
 
 public final class BlockMapper {
 
-    private static final BlockMapper instance = new BlockMapper();
+    private final LoadedCustomBlockReg loadedCustomBlockReg;
+    private final ExecutorService executorService = Executors.newSingleThreadExecutor();
 
-    private BlockMapper() {
+    public BlockMapper(LoadedCustomBlockReg loadedCustomBlockReg) {
+        this.loadedCustomBlockReg = loadedCustomBlockReg;
     }
 
-    public static ConcurrentMap<String, ConcurrentMap<ChunkCoord, Map<Integer, MineableData>>> globalChunkMap = new ConcurrentHashMap<>();
-    private static final ExecutorService executorService = Executors.newSingleThreadExecutor();
-
     public void mapChunkFromDB(World world, final ChunkCoord chunkCoord) {
-        executorService.submit(() -> {
+        this.executorService.submit(() -> {
             BlockDBManager chunkHolder = new BlockDBManager(world, chunkCoord);
             if(!chunkHolder.lookupChunkInDB()) return;
             try {
-                ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.computeIfAbsent(world.getName(), k -> new ConcurrentHashMap<>());
+                ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = this.loadedCustomBlockReg.getGlobalChunkMap().computeIfAbsent(world.getName(), k -> new ConcurrentHashMap<>());
                 localChunkMap.putAll(chunkHolder.getChunkFromDB());
             } catch(IOException e) {
                 throw new RuntimeException(e);
@@ -37,9 +37,9 @@ public final class BlockMapper {
     }
 
     public void unMapChunkSendToDB(final World world, final ChunkCoord chunkCoord) {
-        executorService.submit(() -> {
-            if(!globalChunkMap.containsKey(world.getName())) return;
-            globalChunkMap.get(world.getName()).computeIfPresent(chunkCoord, (cc, blockMap) -> {
+        this.executorService.submit(() -> {
+            if(!this.loadedCustomBlockReg.getGlobalChunkMap().containsKey(world.getName())) return;
+            this.loadedCustomBlockReg.getGlobalChunkMap().get(world.getName()).computeIfPresent(chunkCoord, (cc, blockMap) -> {
                 try {
                     new BlockDBManager(world, chunkCoord).sendChunkToDB(blockMap);
                 } catch(IOException e) {
@@ -51,8 +51,8 @@ public final class BlockMapper {
     }
 
     public void sendWorldToDB(final World world) {
-        executorService.submit(() -> {
-            Map<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.get(world.getName());
+        this.executorService.submit(() -> {
+            Map<ChunkCoord, Map<Integer, MineableData>> localChunkMap = this.loadedCustomBlockReg.getGlobalChunkMap().get(world.getName());
             if(localChunkMap == null) return;
             localChunkMap.forEach((chunkCoord, blockMap) -> {
                 try {
@@ -85,7 +85,7 @@ public final class BlockMapper {
         final ChunkCoord chunkCoord = getChunkCoord(loc);
         final int blockIndex = getBlockIndex(loc);
         final MineableData mineableData = new MineableData(isPermanent, blockID);
-        final ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.computeIfAbsent(world.getName(), k -> new ConcurrentHashMap<>());
+        final ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = this.loadedCustomBlockReg.getGlobalChunkMap().computeIfAbsent(world.getName(), k -> new ConcurrentHashMap<>());
         localChunkMap.compute(chunkCoord, (cc, blockMap) -> {
             if(blockMap == null) blockMap = new ConcurrentHashMap<>();
             blockMap.put(blockIndex, mineableData);
@@ -97,7 +97,7 @@ public final class BlockMapper {
         final World world = loc.getWorld();
         final ChunkCoord chunkCoord = getChunkCoord(loc);
         final int blockIndex = getBlockIndex(loc);
-        final ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = globalChunkMap.get(world.getName());
+        final ConcurrentMap<ChunkCoord, Map<Integer, MineableData>> localChunkMap = this.loadedCustomBlockReg.getGlobalChunkMap().get(world.getName());
         if(localChunkMap == null) return;
         localChunkMap.compute(chunkCoord, (cc, blockMap) -> {
             if(blockMap == null) return null;
@@ -111,15 +111,9 @@ public final class BlockMapper {
         final World world = blockLoc.getWorld();
         final ChunkCoord chunkCoord = getChunkCoord(blockLoc);
         final int blockIndex = getBlockIndex(blockLoc);
-        if(!globalChunkMap.containsKey(world.getName())) return null;
-        final Map<Integer, MineableData> blockMap = globalChunkMap.get(world.getName()).get(chunkCoord);
+        if(!this.loadedCustomBlockReg.getGlobalChunkMap().containsKey(world.getName())) return null;
+        final Map<Integer, MineableData> blockMap = this.loadedCustomBlockReg.getGlobalChunkMap().get(world.getName()).get(chunkCoord);
         if(blockMap == null) return null;
         return blockMap.get(blockIndex);
     }
-
-
-    public static BlockMapper getInstance() {
-        return instance;
-    }
-
 }

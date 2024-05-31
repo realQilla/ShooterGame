@@ -2,7 +2,6 @@ package net.qilla.shootergame.gunsystem.gunskeleton;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.shootergame.gunsystem.guncreation.GunPDC;
-import net.qilla.shootergame.gunsystem.guncreation.GunRegistry;
 import net.qilla.shootergame.gunsystem.guncreation.guntype.GunBase;
 import net.qilla.shootergame.gunsystem.gunutil.CheckValid;
 import net.qilla.shootergame.gunsystem.gunutil.GetFromGun;
@@ -13,6 +12,7 @@ import org.bukkit.persistence.PersistentDataContainer;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -22,18 +22,22 @@ public class GunDisplay {
 
     private static final Map<UUID, GunDisplay> gunStatDisplay = new HashMap<>();
 
-    private BukkitTask displayTask;
+    private final GunBase gunBase;
     private final Player player;
+    private final ItemStack gunItem;
+
+    public GunDisplay(@NotNull GunBase gunBase, @NotNull Player player, @NotNull ItemStack gunItem) {
+        this.gunBase = gunBase;
+        this.player = player;
+        this.gunItem = gunItem;
+        gunStatDisplay.put(player.getUniqueId(), this);
+    }
+
+    private BukkitTask displayTask;
     private int currentMagazine = 0;
     private int currentCapacity = 0;
     private int currentMode = 0;
-    private GunBase gunType = null;
     private String gunUniqueID = null;
-
-    public GunDisplay(Player player) {
-        this.player = player;
-        gunStatDisplay.put(player.getUniqueId(), this);
-    }
 
     public void displayLoop() {
         displayTask = new BukkitRunnable() {
@@ -52,8 +56,8 @@ public class GunDisplay {
     }
 
     private void magazineDisplay(Player player) {
-        if (gunType != null) {
-            String currentMode = gunType.getFireMod()[this.currentMode].modeName();
+        if (gunBase != null) {
+            String currentMode = gunBase.getFireMod()[this.currentMode].modeName();
             player.sendActionBar(MiniMessage.miniMessage().deserialize("<!italic><gold>☄</gold> <white>" + currentMagazine + "</white> | <dark_aqua>\uD83D\uDD25</dark_aqua> <white>" + currentMode + "</white>"));
         } else {
             player.sendActionBar(MiniMessage.miniMessage().deserialize("nothing"));
@@ -63,7 +67,6 @@ public class GunDisplay {
     public void updateGunFields(ItemStack item, boolean forceUpdate) {
         if(CheckValid.isValidBoth(item)) {
             PersistentDataContainer dataContainer = item.getItemMeta().getPersistentDataContainer();
-            gunType = GunRegistry.getGun(GetFromGun.typeID(dataContainer));
             currentMagazine = dataContainer.get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
             currentCapacity = dataContainer.get(GunPDC.GUN_CAPACITY.getKey(), PersistentDataType.INTEGER);
             currentMode = dataContainer.get(GunPDC.GUN_FIRE_MODE.getKey(), PersistentDataType.INTEGER);
@@ -80,7 +83,7 @@ public class GunDisplay {
         currentMagazine = 0;
         currentCapacity = 0;
         currentMode = 0;
-        gunType = null;
+        gunBase = null;
         gunUniqueID = null;
     }
 
@@ -99,8 +102,8 @@ public class GunDisplay {
         forceUpdate();
     }
 
-    public void setGunType(GunBase gunType) {
-        this.gunType = gunType;
+    public void setGunBase(GunBase gunBase) {
+        this.gunBase = gunBase;
         forceUpdate();
     }
 
