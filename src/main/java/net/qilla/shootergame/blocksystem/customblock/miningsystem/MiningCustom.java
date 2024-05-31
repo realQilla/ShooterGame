@@ -7,8 +7,10 @@ import net.minecraft.server.network.ServerGamePacketListenerImpl;
 import net.qilla.shootergame.blocksystem.blockdb.MineableData;
 import net.qilla.shootergame.blocksystem.customblock.BlockKey;
 import net.qilla.shootergame.blocksystem.customblock.CustomBlock;
+import net.qilla.shootergame.util.BlockManagement;
 import net.qilla.shootergame.util.ItemManagement;
 import net.qilla.shootergame.ShooterGame;
+import net.qilla.shootergame.util.TriSound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
@@ -85,8 +87,7 @@ public final class MiningCustom {
 
     private void finishedMining() {
         end();
-        block.getWorld().playSound(block.getLocation(), customBlock.sound(), 1, 0.75f);
-        block.getWorld().spawnParticle(Particle.BLOCK, block.getLocation().add(0.5, 0.5, 0.5), 50, 0.25, 0.25, 0.25, 0, customBlock.material().createBlockData());
+        BlockManagement.popBlock(block.getLocation(), new TriSound(customBlock.sound(), 1, 0.75f));
         itemOutput();
         if (customBlock.getNode() != null) {
             nodeLogic();
@@ -129,10 +130,8 @@ public final class MiningCustom {
     }
 
     private void unlockBlock() {
-        block.setType(customBlock.material());
+        BlockManagement.setBlock(customBlock.material(), block.getLocation(), new TriSound(customBlock.sound(), 1, 0.75f));
         block.removeMetadata(BlockKey.lockedBlock.getKey(), ShooterGame.getInstance());
-        block.getWorld().playSound(block.getLocation(), customBlock.sound(), 1, 0.0f);
-        block.getWorld().spawnParticle(Particle.BLOCK, block.getLocation().add(0.6, 0.6, 0.6), 50, 0.25, 0.25, 0.25, 0, customBlock.material().createBlockData());
     }
 
     private boolean hasCorrectTool() {

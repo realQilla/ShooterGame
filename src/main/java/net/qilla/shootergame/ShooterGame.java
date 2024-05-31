@@ -12,6 +12,7 @@ import net.qilla.shootergame.blocksystem.customblock.CustomBlockReg;
 import net.qilla.shootergame.command.GetArmor;
 import net.qilla.shootergame.command.GetBlock;
 import net.qilla.shootergame.command.GetGun;
+import net.qilla.shootergame.command.RemoveCustomBlock;
 import net.qilla.shootergame.cooldown.CooldownRegistry;
 import net.qilla.shootergame.database.Database;
 import net.qilla.shootergame.gunsystem.WeaponListener;
@@ -79,6 +80,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
         this.manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
             new GetArmor(this, commands).register();
+            new RemoveCustomBlock(this, commands).register();
         });
 
         getPluginCommand("GetGun").setExecutor(new GetGun(this));
@@ -115,7 +117,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
         return customArmorReg;
     }
 
-    public LoadedCustomBlockReg getGlobalBlockRegistry() {
+    public LoadedCustomBlockReg getLoadedCustomBlockReg() {
         return loadedCustomBlockReg;
     }
 

@@ -36,8 +36,6 @@ public class GetArmor {
     private final List<String> commandAlias = List.of("ga");
     private final String argSet = "type";
 
-    private ArmorSet armorSet = null;
-
     public GetArmor(ShooterGame plugin, Commands commands) {
         this.plugin = plugin;
         this.commands = commands;
@@ -91,10 +89,10 @@ public class GetArmor {
             return 0;
         }
 
-        this.armorSet = possibleSet.get();
+        ArmorSet armorSet = possibleSet.get();
 
-        for(ArmorBase pieceBase : plugin.getArmorRegistry().getSet(this.armorSet)) {
-            ItemStack item = getItemStack(pieceBase);
+        for(ArmorBase pieceBase : plugin.getArmorRegistry().getSet(armorSet)) {
+            ItemStack item = getItemStack(pieceBase, armorSet);
             ItemManagement.giveItem(player, item);
             player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 0.25f, 2.0f);
         }
@@ -102,7 +100,7 @@ public class GetArmor {
         return Command.SINGLE_SUCCESS;
     }
 
-    private @NotNull ItemStack getItemStack(ArmorBase pieceBase) {
+    private @NotNull ItemStack getItemStack(ArmorBase pieceBase, ArmorSet armorSet) {
         ItemStack item = new ItemStack(pieceBase.getPieceMaterial());
         item.editMeta(meta -> {
             meta.displayName(MiniMessage.miniMessage().deserialize(pieceBase.getPieceName()));
@@ -113,7 +111,7 @@ public class GetArmor {
             }
 
             meta.lore(loreComponents);
-            meta.getPersistentDataContainer().set(ArmorKey.ARMOR_SET.getKey(), PersistentDataType.STRING, this.armorSet.name());
+            meta.getPersistentDataContainer().set(ArmorKey.ARMOR_SET.getKey(), PersistentDataType.STRING, armorSet.name());
             meta.getPersistentDataContainer().set(ArmorKey.ITEM_STAT_MAX_HEALTH.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getMaxHealth());
             meta.getPersistentDataContainer().set(ArmorKey.ITEM_STAT_DEFENSE.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getDefense());
             meta.getPersistentDataContainer().set(ArmorKey.ITEM_STAT_REGENERATION.getKey(), PersistentDataType.LONG, pieceBase.getPieceStat().getRegeneration());
