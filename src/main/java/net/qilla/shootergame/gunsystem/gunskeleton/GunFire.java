@@ -33,6 +33,7 @@ public final class GunFire {
     private final GunBase gunBase;
     private ItemStack gunItem;
 
+    private ItemMeta meta;
     private PersistentDataContainer dataContainer;
     private final String gunUniqueID;
     private final int fireMode;
@@ -46,7 +47,8 @@ public final class GunFire {
         this.gunBase = gunBase;
         this.gunItem = gunItem;
 
-        this.dataContainer = this.gunItem.getItemMeta().getPersistentDataContainer();
+        this.meta = this.gunItem.getItemMeta();
+        this.dataContainer = this.meta.getPersistentDataContainer();
         this.bulletsInMagazine = this.dataContainer.get(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER);
         this.recentReload = this.dataContainer.get(GunPDC.GUN_RELOAD_STATUS.getKey(), PersistentDataType.BOOLEAN);
         this.gunUniqueID = this.dataContainer.get(GunPDC.GUN_UUID.getKey(), PersistentDataType.STRING);
@@ -80,10 +82,10 @@ public final class GunFire {
         }
         //GunDisplay.getDisplayMap(player).setCurrentMagazine(bulletsInMagazine);
 
-        RayTraceResult traceBlock = player.rayTraceBlocks(gunBase.getFireMod()[fireMode].bulletRange(), FluidCollisionMode.NEVER);
-        RayTraceResult traceEntity = player.rayTraceEntities(gunBase.getFireMod()[fireMode].bulletRange(), true);
+        final RayTraceResult traceBlock = player.rayTraceBlocks(gunBase.getFireMod()[fireMode].bulletRange(), FluidCollisionMode.NEVER);
+        final RayTraceResult traceEntity = player.rayTraceEntities(gunBase.getFireMod()[fireMode].bulletRange(), true);
 
-        SoundModel fireSound = gunBase.getCosmeticMod().fireSound();
+        final SoundModel fireSound = gunBase.getCosmeticMod().fireSound();
         player.getWorld().playSound(player.getLocation(), fireSound.getSound(), fireSound.getVolume(), new Randomizer().between((fireSound.getPitch() - 0.15f), fireSound.getPitch() + 0.15f));
         fireParticle();
 
@@ -95,43 +97,37 @@ public final class GunFire {
         }
         //new GunRecoil().verticalRecoil(player, true);
 
-        updateGun();
         bulletsInBurst--;
         bulletsInMagazine--;
+        updateGun();
     }
 
     private boolean checkEmptyAmmo() {
         if(this.bulletsInMagazine <= 0) {
-            SoundModel emptyMagazine = this.gunBase.getCosmeticMod().emptyMagazine();
+            final SoundModel emptyMagazine = this.gunBase.getCosmeticMod().emptyMagazine();
             this.player.playSound(this.player.getLocation(), emptyMagazine.getSound(), emptyMagazine.getVolume(), emptyMagazine.getPitch());
             return true;
         }
         return false;
     }
 
-    private int decrementMagazine() {
-        this.dataContainer.set(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER, bulletsInMagazine);
-        player.sendMessage(bulletsInMagazine + " bullets left");
-        return bulletsInMagazine;
-    }
-
     private void updateGun() {
-        ItemMeta meta = this.gunItem.getItemMeta();
-        Damageable damageable = (Damageable) meta;
+        this.meta = this.gunItem.getItemMeta();
+        final Damageable damageable = (Damageable) meta;
 
-        int currentMagazine = decrementMagazine();
-        int maxMagazine = this.gunBase.getAmmunitionMod().gunMagazine();
-        if(currentMagazine > 0) damageable.setDamage((maxMagazine - currentMagazine) * (this.gunItem.getType().getMaxDurability() / maxMagazine));
+        final int maxMagazine = this.gunBase.getAmmunitionMod().gunMagazine();
+        if(bulletsInMagazine > 0) damageable.setDamage((maxMagazine - bulletsInMagazine) * (this.gunItem.getType().getMaxDurability() / maxMagazine));
         else damageable.setDamage(this.gunItem.getType().getMaxDurability() - 2);
+        this.meta.getPersistentDataContainer().set(GunPDC.GUN_MAGAZINE.getKey(), PersistentDataType.INTEGER, bulletsInMagazine);
         this.gunItem.setItemMeta(meta);
     }
 
     private void fireParticle() {
-        Location particleLoc = this.player.getEyeLocation();
+        final Location particleLoc = this.player.getEyeLocation();
         final int particleLength = this.gunBase.getFireMod()[this.fireMode].bulletRange();
 
         for (double ray = 1f; ray < particleLength; ray += 1) {
-            Vector vector = particleLoc.getDirection().multiply(ray).normalize();
+            final Vector vector = particleLoc.getDirection().multiply(ray).normalize();
             particleLoc.add(vector);
 
             particleLoc.getWorld().spawnParticle(this.gunBase.getCosmeticMod().fireParticle(), particleLoc, 1, 0, 0, 0, 0.15f);
