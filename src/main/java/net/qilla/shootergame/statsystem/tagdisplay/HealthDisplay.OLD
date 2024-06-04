@@ -2,7 +2,6 @@ package net.qilla.shootergame.statsystem.tagdisplay;
 
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.shootergame.statsystem.EntityKey;
-import net.qilla.shootergame.statsystem.healthcalc.HealthDifference;
 import net.qilla.shootergame.ShooterGame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;

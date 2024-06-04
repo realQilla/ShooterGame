@@ -4,7 +4,6 @@ import com.destroystokyo.paper.event.player.PlayerArmorChangeEvent;
 import net.qilla.shootergame.corpsesystem.CorpseDisplay;
 import net.qilla.shootergame.statsystem.healthcalc.DamageCalc;
 import net.qilla.shootergame.statsystem.statmanagement.StatManager;
-import net.qilla.shootergame.statsystem.tagdisplay.HealthDisplay;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,15 +22,13 @@ public final class StatListener implements Listener {
 
     @EventHandler
     private void onDamage(final EntityDamageEvent event) {
-        long damage = Math.round(event.getDamage());
+        final long damage = Math.round(event.getDamage());
         event.setDamage(0);
 
         LivingEntity attacker;
-        if(event.getDamageSource().getCausingEntity() == null || !(event.getDamageSource().getCausingEntity() instanceof LivingEntity livingEntity)) {
-            attacker = null;
-        } else {
-            attacker = livingEntity;
-        }
+        if(event.getDamageSource().getCausingEntity() instanceof LivingEntity livingEntity) attacker = livingEntity;
+        else attacker = null;
+
         if(event.getEntity() instanceof Player player) {
             new DamageCalc(player, attacker, damage).damageMain();
         }
@@ -44,22 +41,22 @@ public final class StatListener implements Listener {
 
     @EventHandler
     private void onSpawn(final EntitySpawnEvent event) {
-        if (event.getEntity() instanceof LivingEntity livingEntity)
-            new HealthDisplay(livingEntity).initialDisplaySetup();
+        if (event.getEntity() instanceof LivingEntity livingEntity);
+            //new HealthDisplay(livingEntity).initialDisplaySetup();
     }
 
     @EventHandler
     private void onPlayerRespawn(final PlayerRespawnEvent event) {
         Player player = event.getPlayer();
 
-        StatManager.getStatManager(player.getUniqueId()).resetHealth();
+        StatManager.getStatManager(player).resetStats();
     }
 
     @EventHandler
     private void onPlayerArmorChange(final PlayerArmorChangeEvent event) {
         Player player = event.getPlayer();
 
-        StatManager.getStatManager(player.getUniqueId()).updateArmor();
+        StatManager.getStatManager(player).updateArmor();
     }
 
     @EventHandler

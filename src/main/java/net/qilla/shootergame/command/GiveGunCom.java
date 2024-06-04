@@ -3,7 +3,6 @@ package net.qilla.shootergame.command;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.shootergame.ShooterGame;
-import net.qilla.shootergame.gunsystem.guncreation.GunRegistry;
 import net.qilla.shootergame.gunsystem.guncreation.guntype.GunBase;
 import net.qilla.shootergame.gunsystem.guncreation.GunPDC;
 import net.qilla.shootergame.permission.PermissionCommand;
@@ -22,11 +21,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class GetGun implements CommandExecutor, TabExecutor {
+public class GiveGunCom implements CommandExecutor, TabExecutor {
 
     private final ShooterGame plugin;
 
-    public GetGun(ShooterGame plugin) {
+    public GiveGunCom(ShooterGame plugin) {
         this.plugin = plugin;
     }
 

@@ -1,44 +1,44 @@
 package net.qilla.shootergame.armorsystem.armortype;
 
-import net.qilla.shootergame.armorsystem.armormodel.PieceType;
-import net.qilla.shootergame.statsystem.statmanagement.StatModel;
+import net.qilla.shootergame.armorsystem.armormodel.ArmorType;
+import net.qilla.shootergame.statsystem.stat.StatBase;
 import org.bukkit.Material;
 
 import java.util.List;
 
 public abstract class ArmorBase {
 
-    private final Material pieceMaterial;
-    private final StatModel pieceStat;
-    private final PieceType pieceType;
-    private final String pieceName;
-    private final List<String> pieceLore;
+    private final Material material;
+    private final StatBase[] stats;
+    private final ArmorType type;
+    private final String name;
+    private final List<String> lore;
 
-    ArmorBase(Material pieceMaterial, StatModel pieceStat, PieceType pieceType, String pieceName, List<String> pieceLore) {
-        this.pieceMaterial = pieceMaterial;
-        this.pieceStat = pieceStat;
-        this.pieceType = pieceType;
-        this.pieceName = pieceName;
-        this.pieceLore = pieceLore;
+    ArmorBase(Material material, StatBase[] stats, ArmorType type, String name, List<String> lore) {
+        this.material = material;
+        this.stats = stats;
+        this.type = type;
+        this.name = name;
+        this.lore = lore;
     }
 
-    public Material getPieceMaterial() {
-        return pieceMaterial;
+    public Material getMaterial() {
+        return material;
     }
 
-    public StatModel getPieceStat() {
-        return pieceStat;
+    public StatBase[] getStats() {
+        return stats;
     }
 
-    public PieceType getPieceType() {
-        return pieceType;
+    public ArmorType getType() {
+        return type;
     }
 
-    public String getPieceName() {
-        return pieceName;
+    public String getName() {
+        return name;
     }
 
-    public List<String> getPieceLore() {
-        return pieceLore;
+    public List<String> getLore() {
+        return lore;
     }
 }

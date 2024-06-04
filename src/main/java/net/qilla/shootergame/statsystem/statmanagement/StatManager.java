@@ -1,152 +1,146 @@
 package net.qilla.shootergame.statsystem.statmanagement;
 
-import net.qilla.shootergame.armorsystem.ArmorKey;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundSetHealthPacket;
+import net.minecraft.server.level.ServerPlayer;
 import net.qilla.shootergame.statsystem.actionbar.StatDisplay;
-import net.qilla.shootergame.statsystem.BaseValues;
 import net.qilla.shootergame.statsystem.healthcalc.HealCalc;
-import net.qilla.shootergame.statsystem.statutil.UpdatePlayer;
+import net.qilla.shootergame.statsystem.stat.*;
+import net.qilla.shootergame.statsystem.statutil.Formula;
 import net.qilla.shootergame.ShooterGame;
 import org.bukkit.Bukkit;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitTask;
+import org.jetbrains.annotations.NotNull;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
-public class StatManager extends StatCore {
+import static net.qilla.shootergame.statsystem.stat.StatType.*;
 
-    private static final Map<UUID, StatManager> statManager = new HashMap<>();
+public class StatManager {
 
-    private BukkitTask timedStat;
+    private static final Map<UUID, StatManager> statManagerRegistry = new HashMap<>();
+
     private final Player player;
-    private final UUID playerUUID;
 
-    public StatManager(Player player) {
-        super(player.getUniqueId());
+    private final StatContainer statContainer;
+    private final StatDisplay statDisplay;
+
+    private StatContainer activeArmor;
+    private StatContainer activeHeld;
+
+    private BukkitTask regenerationTask;
+
+    public StatManager(@NotNull Player player) {
+        statManagerRegistry.put(player.getUniqueId(), this);
+
         this.player = player;
-        this.playerUUID = player.getUniqueId();
-        statManager.put(playerUUID, this);
 
-        super.setHealth(calcTotalMaxHealth());
-        super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefense(), calcTotalRegeneration()));
-        new StatDisplay(player);
+        this.statContainer = new StatContainer().registerAll();
         setAttributes();
-        automatedTasks();
+        healthRegeneration();
+        this.statDisplay = new StatDisplay(this);
+
+        this.activeArmor = null;
+        this.activeHeld = null;
     }
 
-    public static StatManager getStatManager(UUID playerUUID) {
-        return statManager.get(playerUUID);
+    public static StatManager getStatManager(@NotNull final Player player) {
+        return statManagerRegistry.get(player.getUniqueId());
     }
 
-    public void addHealth(long amount) {
-        super.setHealth(super.getHealth() + amount);
-        UpdatePlayer.healthBarDisplay(player, (super.getHealth() + amount), super.getStats().getMaxHealth());
-        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
+    public StatContainer getStatRegistry() {
+        return this.statContainer;
     }
 
-    public void removeHealth(long amount) {
-        long finalHealth = super.getHealth() - amount;
-        super.setHealth(finalHealth);
-        UpdatePlayer.healthBarDisplay(player, (finalHealth), super.getStats().getMaxHealth());
-        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
+    public Player getPlayer() {
+        return this.player;
     }
 
-    public void killPlayer() {
-        player.setHealth(0);
+    public StatDisplay getStatDisplay() {
+        return this.statDisplay;
     }
 
-    public void resetHealth() {
-        super.setHealth(BaseValues.BASE_HEALTH.getValue());
-        UpdatePlayer.healthBarDisplay(player, BaseValues.BASE_HEALTH.getValue(), super.getStats().getMaxHealth());
-        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
+
+
+    public void addStat(final StatBase stat, final long amount) {
+        this.statContainer.addValue(stat.getType(), amount);
+        this.statDisplay.forceUpdate();
     }
 
-    public void clear() {
-        super.clearStats();
-        statManager.remove(playerUUID);
-        StatDisplay.getStatDisplay(player.getUniqueId()).remove();
-        if (timedStat == null || timedStat.isCancelled()) return;
-        timedStat.cancel();
+    public void subtractStat(final StatBase stat, final long amount) {
+        this.statContainer.subtractValue(stat.getType(), amount);
+        this.statDisplay.forceUpdate();
     }
 
-    public StatModel getStats() {
-        return super.getStats();
+    public void setStat(final StatBase stat, final long amount) {
+        this.statContainer.setValue(stat.getType(), amount);
+        this.statDisplay.forceUpdate();
     }
 
-    public long getHealth() {
-        return super.getHealth();
+
+
+    public void kill() {
+        this.player.setHealth(0);
     }
+
+    public void resetStats() {
+        this.statContainer.resetStats();
+        this.statDisplay.forceUpdate();
+        updateClientHealth(statContainer.getStat(MAX_HEALTH).getValue());
+    }
+
+    public void hardRemove() {
+        statManagerRegistry.remove(player.getUniqueId());
+        this.statDisplay.remove();
+        if (regenerationTask == null || regenerationTask.isCancelled()) return;
+        this.regenerationTask.cancel();
+    }
+
+
 
     public void updateArmor() {
-        safeStatUpdate();
-        StatDisplay.getStatDisplay(playerUUID).updateDisplay();
+        this.activeArmor = new StatCalculation().activeArmor(player);
+        calcAll();
     }
 
-    private void safeStatUpdate() {
-        if (getHealth() > calcTotalMaxHealth()) setHealth(calcTotalMaxHealth());
-        super.setStats(new StatModel(calcTotalMaxHealth(), calcTotalDefense(), calcTotalRegeneration()));
-        UpdatePlayer.healthBarDisplay(player, (super.getHealth()), super.getStats().getMaxHealth());
-    }
-
-    /**
-     * Calculate the all variables for that stat
-     */
-
-    private long calcTotalMaxHealth() {
-        return BaseValues.BASE_HEALTH.getValue() + getArmorPDC(ArmorKey.ITEM_STAT_MAX_HEALTH) + getHeldPDC(ArmorKey.ITEM_STAT_MAX_HEALTH);
-    }
-
-    private long calcTotalDefense() {
-        return BaseValues.BASE_DEFENSE.getValue() + getArmorPDC(ArmorKey.ITEM_STAT_DEFENSE) + getHeldPDC(ArmorKey.ITEM_STAT_DEFENSE);
-    }
-
-    private long calcTotalRegeneration() {
-        return getArmorPDC(ArmorKey.ITEM_STAT_REGENERATION) + getHeldPDC(ArmorKey.ITEM_STAT_REGENERATION);
-    }
-
-    /**
-     * Get PDC's from different places
-     */
-
-    private long getArmorPDC(ArmorKey armorKey) {
-        long totalValue = 0;
-        for (ItemStack item : player.getInventory().getArmorContents()) {
-            if (item != null && item.hasItemMeta() && item.getItemMeta().getPersistentDataContainer().has(armorKey.getKey(), PersistentDataType.LONG)) {
-                totalValue += item.getItemMeta().getPersistentDataContainer().get(armorKey.getKey(), PersistentDataType.LONG);
-            }
-        }
-        return totalValue;
-    }
-
-    private long getHeldPDC(ArmorKey armorKey) {
-        long totalValue = 0;
-        if (player.getInventory().getItemInMainHand().hasItemMeta() && player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().has(armorKey.getKey(), PersistentDataType.LONG)) {
-            //totalValue += player.getInventory().getItemInMainHand().getItemMeta().getPersistentDataContainer().get(armorPDC.getKey(), PersistentDataType.LONG);
-        }
-        return totalValue;
+    public void calcAll() {
+        this.statContainer.resetStats();
+        statContainer.getContainer().forEach((k, v) -> System.out.println("BEFORE: " + k + " " + v.getValue()));
+        this.activeArmor.getContainer().forEach((k, v) -> this.statContainer.addValue(k, v.getValue()));
+        statContainer.getContainer().forEach((k, v) -> System.out.println("AFTER: " + k + " " + v.getValue()));
+        this.statDisplay.forceUpdate();
+        updateClientHealth(this.statContainer.getStat(HEALTH).getValue());
     }
 
     private void setAttributes() {
-        player.getAttribute(Attribute.PLAYER_BLOCK_BREAK_SPEED).setBaseValue(0);
+        this.player.getAttribute(Attribute.PLAYER_BLOCK_BREAK_SPEED).setBaseValue(0);
     }
 
-    /**
-     * Automated timed tasks
-     */
-
-    private void automatedTasks() {
-        timedStat = Bukkit.getScheduler().runTaskTimer(ShooterGame.getInstance(), () -> {
-            setRegeneration();
-        }, 0, 40);
+    private void healthRegeneration() {
+        this.regenerationTask = Bukkit.getScheduler().runTaskTimer(ShooterGame.getInstance(), () -> setRegeneration(), 0, 40);
     }
 
     private void setRegeneration() {
-        if (getHealth() >= getStats().getMaxHealth() || getHealth() <= 0) return;
-        final long regeneration = (long) Math.ceil((double) getStats().getMaxHealth() / 100);
-        new HealCalc(player, getStats().getRegeneration() + regeneration).healMain();
+        final long health = this.statContainer.getStat(HEALTH).getValue();
+        final long maxHealth = this.statContainer.getStat(MAX_HEALTH).getValue();
+        final long regeneration = this.statContainer.getStat(REGENERATION).getValue();
+
+        if (health >= maxHealth|| health <= 0) return;
+        final long bonusRegeneration = (long) Math.floor((double) maxHealth / 100);
+
+        new HealCalc(this, regeneration + bonusRegeneration).healMain();
+    }
+
+    public void updateClientHealth(final long health) {
+        final ServerPlayer nmsPlayer = ((CraftPlayer) this.player).getHandle();
+        final Packet<ClientGamePacketListener> packet = new ClientboundSetHealthPacket(Formula.healthBar(health, statContainer.getStat(HEALTH).getValue()),
+                this.player.getFoodLevel(),
+                this.player.getSaturation());
+
+        nmsPlayer.connection.sendPacket(packet);
     }
 }

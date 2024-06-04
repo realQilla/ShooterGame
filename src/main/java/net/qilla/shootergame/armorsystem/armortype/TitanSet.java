@@ -1,8 +1,10 @@
 package net.qilla.shootergame.armorsystem.armortype;
 
 import net.qilla.shootergame.armorsystem.armormodel.ArmorSet;
-import net.qilla.shootergame.armorsystem.armormodel.PieceType;
-import net.qilla.shootergame.statsystem.statmanagement.StatModel;
+import net.qilla.shootergame.armorsystem.armormodel.ArmorType;
+import net.qilla.shootergame.statsystem.stat.StatDefense;
+import net.qilla.shootergame.statsystem.stat.StatMaxHealth;
+import net.qilla.shootergame.statsystem.stat.StatBase;
 import org.bukkit.Material;
 
 import java.util.List;
@@ -11,8 +13,8 @@ public final class TitanSet extends ArmorBase {
 
     private static final ArmorSet armorSet = ArmorSet.TITAN_SET;
 
-    private TitanSet(Material pieceMaterial, StatModel pieceStat, PieceType pieceType, String pieceName, List<String> pieceLore) {
-        super(pieceMaterial, pieceStat, pieceType, pieceName, pieceLore);
+    private TitanSet(final Material material, final StatBase[] pieceStatBases, final ArmorType type, final String name, final List<String> lore) {
+        super(material, pieceStatBases, type, name, lore);
     }
 
     public static ArmorSet getSet() {
@@ -21,16 +23,23 @@ public final class TitanSet extends ArmorBase {
 
     public static ArmorBase Helmet() {
         return new TitanSet(Material.IRON_HELMET,
-                new StatModel(100, 90, 0),
-                PieceType.HELMET,
+                new StatBase[]{
+                        new StatMaxHealth(250),
+                        new StatDefense(125)
+                },
+                ArmorType.HELMET,
                 "<!italic><gold>Titan Helmet</gold>",
                 List.of("",
                         "<!italic><gold><bold>ENCHANTED HELMET</bold></gold>"));
     }
+
     public static ArmorBase Chestplate() {
         return new TitanSet(Material.IRON_CHESTPLATE,
-                new StatModel(200, 150, 0),
-                PieceType.CHEST_PLATE,
+                new StatBase[]{
+                        new StatMaxHealth(500),
+                        new StatDefense(325)
+                },
+                ArmorType.CHEST_PLATE,
                 "<!italic><gold>Titan Chestplate</gold>",
                 List.of("",
                         "<!italic><gold><bold>ENCHANTED CHESTPLATE</bold></gold>"));
@@ -38,8 +47,11 @@ public final class TitanSet extends ArmorBase {
 
     public static ArmorBase Leggings() {
         return new TitanSet(Material.IRON_LEGGINGS,
-                new StatModel(150, 110, 0),
-                PieceType.LEGGINGS,
+                new StatBase[]{
+                        new StatMaxHealth(425),
+                        new StatDefense(275)
+                },
+                ArmorType.LEGGINGS,
                 "<!italic><gold>Titan Leggings</gold>",
                 List.of("",
                         "<!italic><gold><bold>ENCHANTED LEGGINGS</bold></gold>"));
@@ -47,8 +59,11 @@ public final class TitanSet extends ArmorBase {
 
     public static ArmorBase Boots() {
         return new TitanSet(Material.IRON_BOOTS,
-                new StatModel(75, 80, 0),
-                PieceType.BOOTS,
+                new StatBase[]{
+                        new StatMaxHealth(200),
+                        new StatDefense(100)
+                },
+                ArmorType.BOOTS,
                 "<!italic><gold>Titan Boots</gold>",
                 List.of("",
                         "<!italic><gold><bold>ENCHANTED BOOTS</bold></gold>"));

@@ -4,17 +4,16 @@ import io.papermc.paper.command.brigadier.Commands;
 import io.papermc.paper.plugin.lifecycle.event.LifecycleEventManager;
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.qilla.shootergame.armorsystem.CustomArmorReg;
+import net.qilla.shootergame.armorsystem.ArmorRegistry;
 import net.qilla.shootergame.blocksystem.blockdb.BlockDBListener;
 import net.qilla.shootergame.blocksystem.blockdb.BlockMapper;
 import net.qilla.shootergame.blocksystem.blockdb.LoadedCustomBlockReg;
 import net.qilla.shootergame.blocksystem.customblock.CustomBlockReg;
 import net.qilla.shootergame.blocksystem.customblock.MiningReg;
-import net.qilla.shootergame.blocksystem.customblock.miningsystem.MiningForwarder;
-import net.qilla.shootergame.command.GetArmor;
-import net.qilla.shootergame.command.GetBlock;
-import net.qilla.shootergame.command.GetGun;
-import net.qilla.shootergame.command.RemoveCustomBlock;
+import net.qilla.shootergame.command.GiveArmorCom;
+import net.qilla.shootergame.command.GetBlockCom;
+import net.qilla.shootergame.command.GiveGunCom;
+import net.qilla.shootergame.command.RCBCom;
 import net.qilla.shootergame.cooldown.CooldownRegistry;
 import net.qilla.shootergame.database.Database;
 import net.qilla.shootergame.gunsystem.WeaponListener;
@@ -44,7 +43,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
 
     private final CooldownRegistry cooldownRegistry = new CooldownRegistry();
     private final GunRegistry gunRegistry = new GunRegistry();
-    private final CustomArmorReg customArmorReg = new CustomArmorReg();
+    private final ArmorRegistry armorRegistry = ArmorRegistry.getInstance();
     private final LoadedCustomBlockReg loadedCustomBlockReg = new LoadedCustomBlockReg();
     private final CustomBlockReg customBlockReg = new CustomBlockReg(this);
     private final MiningReg miningReg = new MiningReg();
@@ -82,12 +81,12 @@ public final class ShooterGame extends JavaPlugin implements Listener {
     private void registerCommands() {
         this.manager.registerEventHandler(LifecycleEvents.COMMANDS, event -> {
             final Commands commands = event.registrar();
-            new GetArmor(this, commands).register();
-            new RemoveCustomBlock(this, commands).register();
+            new GiveArmorCom(this, commands).register();
+            new RCBCom(this, commands).register();
         });
 
-        getPluginCommand("GetGun").setExecutor(new GetGun(this));
-        getPluginCommand("GetBlock").setExecutor(new GetBlock());
+        getPluginCommand("GetGun").setExecutor(new GiveGunCom(this));
+        getPluginCommand("GetBlock").setExecutor(new GetBlockCom());
     }
 
     @EventHandler
@@ -104,7 +103,7 @@ public final class ShooterGame extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
 
         packetGeneric.removeListener(player);
-        StatManager.getStatManager(player.getUniqueId()).clear();
+        StatManager.getStatManager(player).hardRemove();
         //GunDisplay.getDisplayMap(player).remove();
     }
 
@@ -116,8 +115,8 @@ public final class ShooterGame extends JavaPlugin implements Listener {
         return gunRegistry;
     }
 
-    public CustomArmorReg getArmorRegistry() {
-        return customArmorReg;
+    public ArmorRegistry getArmorRegistry() {
+        return armorRegistry;
     }
 
     public LoadedCustomBlockReg getLoadedCustomBlockReg() {

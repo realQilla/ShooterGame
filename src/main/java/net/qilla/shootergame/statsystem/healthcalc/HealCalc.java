@@ -2,36 +2,35 @@ package net.qilla.shootergame.statsystem.healthcalc;
 
 import net.qilla.shootergame.statsystem.damageindicator.Indicator;
 import net.qilla.shootergame.statsystem.statmanagement.StatManager;
-import net.qilla.shootergame.statsystem.tagdisplay.HealthDisplay;
 import org.bukkit.entity.Player;
+
+import static net.qilla.shootergame.statsystem.stat.StatType.*;
 
 public final class HealCalc {
 
     private final StatManager statManager;
     private final Player sourceReceiver;
-    private final long healAmount;
+    private final long amount;
     private final long maxHealth;
-    private final long currentHealth;
+    private final long priorHealth;
 
-    public HealCalc(final Player sourceReceiver, long healAmount) {
-        this.statManager = StatManager.getStatManager(sourceReceiver.getUniqueId());
-        this.sourceReceiver = sourceReceiver;
-        this.maxHealth = statManager.getStats().getMaxHealth();
-        this.currentHealth = statManager.getHealth();
-        this.healAmount = getNeededHeal(healAmount);
+    public HealCalc(final StatManager statManager, final long amount) {
+        this.statManager = statManager;
+        this.sourceReceiver = statManager.getPlayer();
+        this.maxHealth = statManager.getStatRegistry().getStat(MAX_HEALTH).getValue();
+        this.priorHealth = statManager.getStatRegistry().getStat(HEALTH).getValue();
+        this.amount = calcHealing(amount);
     }
 
     public void healMain() {
-        statManager.addHealth(healAmount);
-        new Indicator(sourceReceiver.getLocation(), Indicator.IndicatorType.HEAL, healAmount).mainIndicator();
-        new HealthDisplay(sourceReceiver, new HealthDifference(currentHealth, healAmount), HealthDisplay.DisplayType.HEAL).updateHealthDisplay();
+        statManager.addStat(statManager.getStatRegistry().getStat(HEALTH), amount);
+        new Indicator(sourceReceiver.getEyeLocation(), Indicator.IndicatorType.HEAL, amount).mainIndicator();
+        statManager.updateClientHealth(priorHealth + amount);
+        //new HealthDisplay(sourceReceiver, new HealthDifference(currentHealth, amount), HealthDisplay.DisplayType.HEAL).updateHealthDisplay();
     }
 
-    private long getNeededHeal(long healAmount) {
-        if((currentHealth + healAmount) > maxHealth) {
-            return maxHealth - currentHealth;
-        } else {
-            return healAmount;
-        }
+    private long calcHealing(long amount) {
+        if((priorHealth + amount) > maxHealth) return maxHealth - priorHealth;
+        else return amount;
     }
 }

@@ -1,6 +1,6 @@
 package net.qilla.shootergame.armorsystem.armormodel;
 
-public enum PieceType {
+public enum ArmorType {
     HELMET,
     CHEST_PLATE,
     LEGGINGS,

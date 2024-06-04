@@ -1,7 +1,7 @@
 package net.qilla.shootergame.command;
 
 import com.mojang.brigadier.Command;
-import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.arguments.IntegerArgumentType;
 import com.mojang.brigadier.builder.LiteralArgumentBuilder;
 import com.mojang.brigadier.builder.RequiredArgumentBuilder;
 import com.mojang.brigadier.context.CommandContext;
@@ -20,9 +20,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.RayTraceResult;
 
 import java.util.List;
-import java.util.Optional;
 
-public class RemoveCustomBlock {
+public class RCBCom {
 
     private final ShooterGame plugin;
     private final Commands commands;
@@ -33,7 +32,7 @@ public class RemoveCustomBlock {
     private final String argY = "y";
     private final String argZ = "z";
 
-    public RemoveCustomBlock(ShooterGame plugin, Commands commands) {
+    public RCBCom(ShooterGame plugin, Commands commands) {
         this.plugin = plugin;
         this.commands = commands;
     }
@@ -44,8 +43,8 @@ public class RemoveCustomBlock {
                 .requires(source -> source.getSender() instanceof Player && source.getSender().hasPermission("shooter.removecustomblock"))
                 .executes(this::usage);
 
-        final RequiredArgumentBuilder<CommandSourceStack, String> xNode = Commands
-                .argument(argX, StringArgumentType.word())
+        final RequiredArgumentBuilder<CommandSourceStack, Integer> xNode = Commands
+                .argument(argX, IntegerArgumentType.integer())
                 .suggests((context, builder) -> {
                     final String argument = builder.getRemaining();
                     final Player player = (Player) context.getSource().getSender();
@@ -60,8 +59,8 @@ public class RemoveCustomBlock {
                 })
                 .executes(this::usage);
 
-        final RequiredArgumentBuilder<CommandSourceStack, String> yNode = Commands
-                .argument(argY, StringArgumentType.word())
+        final RequiredArgumentBuilder<CommandSourceStack, Integer> yNode = Commands
+                .argument(argY, IntegerArgumentType.integer())
                 .suggests((context, builder) -> {
                     final String argument = builder.getRemaining();
                     final Player player = (Player) context.getSource().getSender();
@@ -76,8 +75,8 @@ public class RemoveCustomBlock {
                 })
                 .executes(this::usage);
 
-        final ArgumentCommandNode<CommandSourceStack, String> zNode = Commands
-                .argument(argZ, StringArgumentType.word())
+        final ArgumentCommandNode<CommandSourceStack, Integer> zNode = Commands
+                .argument(argZ, IntegerArgumentType.integer())
                 .suggests((context, builder) -> {
                     final String argument = builder.getRemaining();
                     final Player player = (Player) context.getSource().getSender();
@@ -106,30 +105,12 @@ public class RemoveCustomBlock {
 
     private int remove(CommandContext<CommandSourceStack> context) {
         final Player player = (Player) context.getSource().getSender();
-        final String specifiedX = context.getArgument(argX, String.class);
-        final String specifiedY = context.getArgument(argY, String.class);
-        final String specifiedZ = context.getArgument(argZ, String.class);
-
-        if(specifiedX.isEmpty() || specifiedY.isEmpty() || specifiedZ.isEmpty()) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>You must specify all three coordinates.</red>"));
-            return 0;
-        }
-
-        final Optional<Integer> possibleX;
-        final Optional<Integer> possibleY;
-        final Optional<Integer> possibleZ;
-
-        try {
-            possibleX = Optional.of(Integer.parseInt(specifiedX));
-            possibleY = Optional.of(Integer.parseInt(specifiedY));
-            possibleZ = Optional.of(Integer.parseInt(specifiedZ));
-        } catch (NumberFormatException e) {
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Invalid coordinates.</red>"));
-            return 0;
-        }
+        final int specifiedX = context.getArgument(argX, Integer.class);
+        final int specifiedY = context.getArgument(argY, Integer.class);
+        final int specifiedZ = context.getArgument(argZ, Integer.class);
 
         final BlockMapper blockMapper = plugin.getBlockMapper();
-        final Location blockLoc = new Location(player.getWorld(), possibleX.get(), possibleY.get(), possibleZ.get());
+        final Location blockLoc = new Location(player.getWorld(), specifiedX, specifiedY, specifiedZ);
 
         if(blockMapper.getMineableData(blockLoc) == null) {
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>There is no custom block at that position.</red>"));

@@ -12,27 +12,28 @@ import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.entity.CraftPlayer;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.Vector;
 
+import static net.qilla.shootergame.statsystem.stat.StatType.DEFENSE;
+
 public class HitEndpoint {
 
     private final Player player;
-    private LivingEntity target;
+    private Player target;
     private Block block;
     private GunBase gunBase;
     private ItemStack gunItem;
 
     private Integer gunDamage;
 
-    public HitEndpoint(Player player, Entity hitEntity, GunBase gunBase, ItemStack gunItem) {
+    public HitEndpoint(Player player, Entity entity, GunBase gunBase, ItemStack gunItem) {
         this.player = player;
-        if(!(hitEntity instanceof LivingEntity livingEntity)) return;
-        this.target = livingEntity;
+        if(!(entity instanceof Player)) return;
+        this.target = (Player) entity;
         this.block = null;
         this.gunBase = gunBase;
         this.gunItem = gunItem;
@@ -87,6 +88,6 @@ public class HitEndpoint {
     }
 
     private double calculateDamage() {
-        return Formula.defenseCalc(this.gunDamage, StatManager.getStatManager(this.target.getUniqueId()).getStats().getDefense());
+        return Formula.defenseCalc(this.gunDamage, StatManager.getStatManager(this.target).getStatRegistry().getStat(DEFENSE).getValue());
     }
 }

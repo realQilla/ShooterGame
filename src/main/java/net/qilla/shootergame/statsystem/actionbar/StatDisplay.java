@@ -3,15 +3,13 @@ package net.qilla.shootergame.statsystem.actionbar;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.qilla.shootergame.statsystem.statmanagement.StatManager;
 import net.qilla.shootergame.ShooterGame;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
-import java.util.*;
+import static net.qilla.shootergame.statsystem.stat.StatType.*;
 
 public class StatDisplay {
-
-    private static final Map<UUID, StatDisplay> statDisplay = new HashMap<>();
 
     private BukkitTask displayTask;
     private final StatManager statManager;
@@ -21,44 +19,33 @@ public class StatDisplay {
     private long playerDefense;
 
 
-    public StatDisplay(Player player) {
-        statManager = StatManager.getStatManager(player.getUniqueId());
-        this.player = player;
-        statDisplay.put(player.getUniqueId(), this);
+    public StatDisplay(StatManager statManager) {
+        this.statManager = statManager;
+        this.player = statManager.getPlayer();
 
         displayLoop();
     }
 
     private void displayLoop() {
-        displayTask = new BukkitRunnable() {
-            @Override
-            public void run() {
-                updateStats();
-                player.sendActionBar(MiniMessage.miniMessage().deserialize("<red>♥ " + playerHealth + "/" + playerMaxHealth + "</red>   <gray>" + playerDefense + " \uD83D\uDEE1</gray>"));
-            }
-        }.runTaskTimer(ShooterGame.getInstance(), 0, 20);
+        remove();
+        displayTask = Bukkit.getScheduler().runTaskTimer(ShooterGame.getInstance(), () -> {
+            pullUpdatedStats();
+            player.sendActionBar(MiniMessage.miniMessage().deserialize("<red>♥ " + playerHealth + "/" + playerMaxHealth + "</red>   <gray>" + playerDefense + " \uD83D\uDEE1</gray>"));
+        }, 0, 30);
     }
 
-    public void updateDisplay() {
-        if(displayTask != null) {
-            displayTask.cancel();
-            displayTask = null;
-        }
+    public void forceUpdate() {
+        remove();
         displayLoop();
     }
 
-    private void updateStats() {
-        this.playerHealth = statManager.getHealth();
-        this.playerMaxHealth = statManager.getStats().getMaxHealth();
-        this.playerDefense = statManager.getStats().getDefense();
-    }
-
-    public static StatDisplay getStatDisplay(UUID playerUUID) {
-        return statDisplay.get(playerUUID);
+    private void pullUpdatedStats() {
+        this.playerHealth = statManager.getStatRegistry().getStat(HEALTH).getValue();
+        this.playerMaxHealth = statManager.getStatRegistry().getStat(MAX_HEALTH).getValue();
+        this.playerDefense = statManager.getStatRegistry().getStat(DEFENSE).getValue();
     }
 
     public void remove() {
-        statDisplay.remove(player.getUniqueId());
         if(displayTask != null) {
             displayTask.cancel();
             displayTask = null;

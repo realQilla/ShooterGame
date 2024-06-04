@@ -21,7 +21,7 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-public class GetBlock implements CommandExecutor, TabExecutor {
+public class GetBlockCom implements CommandExecutor, TabExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {

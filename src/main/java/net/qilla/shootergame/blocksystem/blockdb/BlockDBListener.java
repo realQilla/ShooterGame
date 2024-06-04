@@ -71,7 +71,7 @@ public final class BlockDBListener implements Listener {
 
         MineableData mineableData = blockMapper.getMineableData(block.getLocation());
         if(mineableData != null)
-            player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Successfully placed permanent custom block. (Permanent: " + mineableData.isPermanent() + ") </green>"));
+            player.sendMessage(MiniMessage.miniMessage().deserialize("<green>Successfully placed a custom block. (Permanent: " + mineableData.isPermanent() + ") </green>"));
         else {
             event.setCancelled(true);
             player.sendMessage(MiniMessage.miniMessage().deserialize("<red>Failed to place custom block.</red>"));
